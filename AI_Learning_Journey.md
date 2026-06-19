@@ -17,8 +17,8 @@ current one is understood.
 2. ✅ Symbolic AI (rules & logic) — the first real attempt
 3. ✅ The obstacles that broke symbolic AI
 4. ✅ The big idea: learning from data instead of rules
-5. ⏳ The first neural network (the perceptron) — and what broke it
-6. ⬜ Backpropagation — teaching networks to learn
+5. ✅ The first neural network (the perceptron) — and what broke it
+6. ⏳ Backpropagation — teaching networks to learn  ← **RESUME HERE NEXT**
 7. ⬜ Deep learning — depth, data, and GPUs
 8. ⬜ Representing meaning (word embeddings)
 9. ⬜ Handling sequences (RNNs / LSTMs) and their limits
@@ -79,7 +79,23 @@ Four walls, all rooted in "humans must hand-write every rule":
   inputs it never saw → escapes Symbolic AI's brittleness.
 - Modern models = this *same loop*, just billions of knobs instead of one.
 
-### Lesson 5 — The Perceptron (First Neuron) & The Flaw That Broke It  *(in progress)*
+### Lesson 5 — The Perceptron (First Neuron) & The Flaw That Broke It  ✅
 
-_Notes will be added here as we discuss._
+- **Inspiration:** the brain's neuron — receives signals, "fires" if the
+  combined signal clears a threshold. Rosenblatt (1957) built one: the
+  **perceptron.**
+- **Mechanism:** weigh each input (weights = the knobs), sum them, fire (1) if
+  sum > threshold else 0. Learns weights via the same guess→check→adjust loop.
+- **Huge hype** in 1958, then **the wall (Minsky & Papert, 1969):** a single
+  perceptron can only separate data with **one straight line** (linearly
+  separable) → **can't even solve XOR** (fire if inputs differ).
+- **Consequence:** the connectionist/neural-net winter (~a decade).
+- **Visible-but-blocked fix:** stack neurons in **layers** (a neural network) —
+  but nobody knew **how to train the hidden middle layers** (no "right answer"
+  for them). → solved next by **backpropagation**.
+
+### Lesson 6 — Backpropagation  *(NEXT — not started)*
+
+_Resume here next session. Goal: how training the hidden layers was solved,
+which thawed the winter and made deep networks possible._
 
