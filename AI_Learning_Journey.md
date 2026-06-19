@@ -16,8 +16,8 @@ current one is understood.
 1. ✅ **The Dream & The Core Question** — What is "thinking"? Can a machine do it?
 2. ✅ Symbolic AI (rules & logic) — the first real attempt
 3. ✅ The obstacles that broke symbolic AI
-4. ⏳ The big idea: learning from data instead of rules
-5. ⬜ The first neural network (the perceptron) — and what broke it
+4. ✅ The big idea: learning from data instead of rules
+5. ⏳ The first neural network (the perceptron) — and what broke it
 6. ⬜ Backpropagation — teaching networks to learn
 7. ⬜ Deep learning — depth, data, and GPUs
 8. ⬜ Representing meaning (word embeddings)
@@ -67,7 +67,19 @@ Four walls, all rooted in "humans must hand-write every rule":
   rules; show the machine examples and let it learn the patterns itself.* This is
   the birth of **Machine Learning**.
 
-### Lesson 4 — Learning From Data (How "Learning" Actually Works)  *(in progress)*
+### Lesson 4 — Learning From Data (How "Learning" Actually Works)  ✅
+
+- A "rule" is just a **function**: input → output. ML = let the machine *find*
+  the function instead of a human writing it.
+- **Trick:** pick a function with a fixed shape but **adjustable knobs =
+  parameters / weights.** Learning = tuning the knobs.
+- **The training loop:** guess → measure error (**loss**) → nudge knobs to
+  shrink error → repeat. (Toy example: `score = w × hours`.)
+- **Generalization** = the big win: it learns the *pattern*, so it answers
+  inputs it never saw → escapes Symbolic AI's brittleness.
+- Modern models = this *same loop*, just billions of knobs instead of one.
+
+### Lesson 5 — The Perceptron (First Neuron) & The Flaw That Broke It  *(in progress)*
 
 _Notes will be added here as we discuss._
 
