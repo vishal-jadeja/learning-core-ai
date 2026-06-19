@@ -14,8 +14,8 @@ current one is understood.
 ## Roadmap (the big picture — we'll fill these in as we go)
 
 1. ✅ **The Dream & The Core Question** — What is "thinking"? Can a machine do it?
-2. ⏳ Symbolic AI (rules & logic) — the first real attempt
-3. ⬜ The obstacles that broke symbolic AI
+2. ✅ Symbolic AI (rules & logic) — the first real attempt
+3. ⏳ The obstacles that broke symbolic AI
 4. ⬜ The big idea: learning from data instead of rules
 5. ⬜ The first neural network (the perceptron) — and what broke it
 6. ⬜ Backpropagation — teaching networks to learn
@@ -41,7 +41,17 @@ Legend: ✅ understood · ⏳ in progress · ⬜ not started
 - **Why it matters:** AI became about **observable behavior and results**, not
   the philosophy of an inner mind. This mindset still drives today's AI.
 
-### Lesson 2 — Symbolic AI (Rules & Logic)  *(in progress)*
+### Lesson 2 — Symbolic AI (Rules & Logic)  ✅
+
+- **Core belief:** "Intelligence = manipulating symbols according to rules."
+- **Two ingredients:** (1) a **knowledge base** of human-written facts + if-then
+  rules, (2) an **inference engine** that chains rules to reach conclusions.
+- **Wins:** theorem provers, chess programs, 1980s **expert systems** (e.g.
+  MYCIN diagnosing infections).
+- **Defining trait (and future weakness):** *humans hand-write every rule in
+  advance.* The machine is only as smart as its rules.
+
+### Lesson 3 — The Obstacles That Broke Symbolic AI  *(in progress)*
 
 _Notes will be added here as we discuss._
 
