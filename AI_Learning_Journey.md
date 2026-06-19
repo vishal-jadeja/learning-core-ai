@@ -15,8 +15,8 @@ current one is understood.
 
 1. ✅ **The Dream & The Core Question** — What is "thinking"? Can a machine do it?
 2. ✅ Symbolic AI (rules & logic) — the first real attempt
-3. ⏳ The obstacles that broke symbolic AI
-4. ⬜ The big idea: learning from data instead of rules
+3. ✅ The obstacles that broke symbolic AI
+4. ⏳ The big idea: learning from data instead of rules
 5. ⬜ The first neural network (the perceptron) — and what broke it
 6. ⬜ Backpropagation — teaching networks to learn
 7. ⬜ Deep learning — depth, data, and GPUs
@@ -51,7 +51,23 @@ Legend: ✅ understood · ⏳ in progress · ⬜ not started
 - **Defining trait (and future weakness):** *humans hand-write every rule in
   advance.* The machine is only as smart as its rules.
 
-### Lesson 3 — The Obstacles That Broke Symbolic AI  *(in progress)*
+### Lesson 3 — The Obstacles That Broke Symbolic AI  ✅
+
+Four walls, all rooted in "humans must hand-write every rule":
+1. **Brittleness** — every rule needs endless exceptions (birds fly... except
+   penguins, ostriches, injured ones...). Breaks outside what the author foresaw.
+2. **Knowledge bottleneck** — humans writing rules by hand doesn't scale
+   (e.g. **Cyc**, decades of manual rules, still not childlike common sense).
+3. **Common-sense / frame problem** — near-infinite obvious-but-unstated facts
+   ("water falls down") must all be spelled out explicitly.
+4. **Perception** — can't write clean rules for "is this a cat?", speech, etc.
+- **Consequence:** the **AI Winters** (1970s, late-80s/early-90s) — funding &
+  hype collapsed.
+- **THE PIVOT:** root cause = the human writing rules. Decision → *stop writing
+  rules; show the machine examples and let it learn the patterns itself.* This is
+  the birth of **Machine Learning**.
+
+### Lesson 4 — Learning From Data (How "Learning" Actually Works)  *(in progress)*
 
 _Notes will be added here as we discuss._
 
