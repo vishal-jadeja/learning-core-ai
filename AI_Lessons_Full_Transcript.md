@@ -8,10 +8,10 @@ lesson (not just the short summaries in `AI_Learning_Journey.md`).
 only after you say **"understood"**. Progress is logged in
 `AI_Learning_Journey.md`; the deep notes live here.
 
-**Status:** Lessons 1–5 complete. **Resume at Lesson 6 — Backpropagation.**
+**Status:** Lessons 1–6 complete. **Resume at Lesson 7 — Deep Learning.**
 
-To continue on another device: pull this repo, read up through Lesson 5, then
-tell Claude *"let's continue the AI lessons — start Lesson 6."*
+To continue on another device: pull this repo, read up through Lesson 6, then
+tell Claude *"let's continue the AI lessons — start Lesson 7."*
 
 ---
 
@@ -22,8 +22,8 @@ tell Claude *"let's continue the AI lessons — start Lesson 6."*
 3. ✅ The obstacles that broke symbolic AI
 4. ✅ The big idea: learning from data instead of rules
 5. ✅ The first neural network (the perceptron) — and what broke it
-6. ⬜ **Backpropagation — teaching networks to learn  ← RESUME HERE**
-7. ⬜ Deep learning — depth, data, and GPUs
+6. ✅ Backpropagation — teaching networks to learn
+7. ⬜ **Deep learning — depth, data, and GPUs  ← RESUME HERE**
 8. ⬜ Representing meaning (word embeddings)
 9. ⬜ Handling sequences (RNNs / LSTMs) and their limits
 10. ⬜ Attention & the Transformer
@@ -372,9 +372,150 @@ train hidden layers.**
 
 ---
 
-# Lesson 6 — Backpropagation  *(NEXT — not started)*
+# Lesson 6 — Backpropagation: Teaching the Hidden Layers
 
-Resume here. Goal: how training the hidden layers was solved, which thawed the
-neural-net winter and made deep networks possible.
+Lesson 5 ended on a cliffhanger. Stacking neurons in layers *can* solve XOR — a
+first layer bends the space, a second draws its line. But it left one brutal
+question hanging:
 
-_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 6."_
+> The output layer has a target answer to compare against. The neurons in the
+> **middle** don't. Nobody told them what they were *supposed* to output. So how
+> do you tune their knobs?
+
+That question is what froze the field. Backpropagation is the answer that thawed
+it.
+
+## The real problem: who gets the blame?
+
+The final output is wrong by some amount — the **loss** (Lesson 4). The network
+now has to figure out: of its thousands of weights, *which ones* caused the
+error, and *which direction* should each be nudged?
+
+For the **last** layer it's almost doable — those weights feed the output
+directly. But a weight buried three layers deep touches the output only
+*indirectly*, through everything downstream of it. And no one ever handed the
+hidden neurons a "correct answer" to measure against.
+
+This is the **credit assignment problem** (or blame assignment). It's the whole
+game.
+
+## Reframing the network: one long chain of functions
+
+The key realization: a neural network is just **functions stuffed inside
+functions.** Input goes into layer 1; its output feeds layer 2; that feeds layer
+3; out comes the prediction.
+
+```
+output = layer3( layer2( layer1( input ) ) )
+```
+
+The loss sits at the very end. So the loss depends on layer 3's weights
+*directly*, on layer 2's weights *through* layer 3, on layer 1's weights
+*through* layers 2 and 3. Everything is linked in a chain.
+
+## The one question we need for every weight
+
+For a single knob in Lesson 4 we asked: *"if I nudge this knob up, does the error
+go up or down — and how steeply?"* That slope — direction-and-steepness of error
+versus a weight — is the **gradient**. Knowing it, you nudge the weight *downhill*
+(the direction that lowers error). That's **gradient descent.**
+
+The entire challenge of a deep network: compute that slope for **every** weight,
+including the deeply buried ones.
+
+## The trick: the chain rule (multiply the sensitivities)
+
+Calculus gives an exact tool. A buried weight affects the loss through a *chain*
+of steps, and the **chain rule** says: the total sensitivity = **multiply
+together the local sensitivities along the chain.**
+
+The soul of it — **rates multiply.** Walk → bike → car speeds: bike = 2× walking,
+car = 3× bike, so car = 2 × 3 = **6×** walking. Chained "per" relationships
+multiply. With actual numbers, a 2-step chain where weight `w` feeds a middle
+value `a` which feeds the loss `L`:
+
+```
+a = 2 · w      → nudge w by 1, a moves by 2.   (local rate = 2)
+L = 3 · a      → nudge a by 1, L moves by 3.   (local rate = 3)
+
+w +1  →  a +2  →  L +(3×2) = +6
+```
+
+So `L`'s rate-of-change per `w` = **3 × 2 = 6** — the two local rates
+*multiplied*. (Check: `L = 3·(2·w) = 6w`, slope 6. Matches.) Why multiply, not
+add? Effects **compound**: `w` shoves `a`, then that shove gets *scaled* by the
+next link before reaching `L`. Each neuron only needs to know its **own** local
+rate; string them together and you recover the effect of *any* deep weight on the
+final error.
+
+## Two passes: forward, then backward
+
+Backpropagation is the efficient procedure that does this for the whole network
+in one sweep:
+
+1. **Forward pass.** Feed the input through, layer by layer, produce the
+   prediction, compute the loss. *(How wrong are we?)*
+
+2. **Backward pass.** Start at the output with the error. Push it **backward**
+   through the network, one layer at a time. Each layer receives *"here's how much
+   your output needs to change to cut the loss,"* and from that computes two
+   things:
+   - how much its **own** weights should change (its gradient), and
+   - how much the **previous** layer's output needs to change — which it passes
+     further back.
+
+The error signal flows backward, getting split and handed to each layer, until
+**every** weight knows its own gradient. Hence the name — **back-propagation**:
+propagating the error backward. For a deep weight on the path `w → a → b → c → L`,
+its gradient is just every link's local rate multiplied together
+(`(w→a)·(a→b)·(b→c)·(c→L)`); the backward walk reuses the shared tail
+(`c→L`, `b→c`...) for every weight feeding in, which is why it's fast instead of
+recomputing each path from scratch.
+
+## The blame-chain analogy
+
+A company ships a bad product (high loss). The CEO (output) knows the result is
+off by X. He tells each VP how much they contributed. Each VP adjusts their own
+calls **and** tells their managers how far off *they* were. Blame flows down the
+org chart — each level owns its slice and passes the rest along. By the end every
+employee (weight) knows how to adjust. Nobody had to be told the "correct" final
+product up front; the blame got distributed **backward** from the single known
+error.
+
+## Then: nudge everything, repeat
+
+Once backprop has handed every weight its gradient, **gradient descent** nudges
+each weight one tiny step in its error-reducing direction. Forward pass → backward
+pass → nudge. Repeat millions of times over the data. The whole network — hidden
+layers included — slowly tunes itself.
+
+It's the **exact same guess→check→adjust loop from Lesson 4.** Backprop is just
+the machinery that makes "adjust" work when the knobs are buried under layers.
+
+## Why this was the thaw
+
+Training the hidden layers is precisely what Minsky & Papert's wall left
+unsolved. In **1986**, **Rumelhart, Hinton, and Williams** published the paper
+that made backpropagation famous and showed it could train multi-layer networks —
+XOR included. Lesson 5's blocking question was answered. Networks could finally be
+**deep**, and they could learn internal features *nobody hand-designed*. Every
+modern network, GPT included, still trains on this.
+
+**Takeaway:** Stacked neurons could *represent* hard patterns, but nobody could
+*train* the hidden layers — they have no target answer. **Backpropagation** solves
+it: forward pass to measure the loss, then push that error **backward**, using the
+**chain rule** to multiply local sensitivities so every weight — even deep ones —
+learns its own **gradient** (which way to nudge). Gradient descent then nudges
+them all. Same guess→check→adjust loop, now working through any depth. This one
+algorithm ended the neural-net winter and is still how essentially every deep
+network learns.
+
+---
+
+# Lesson 7 — Deep Learning  *(NEXT — not started)*
+
+Resume here. Goal: why **depth** (many layers), **big data**, and **GPUs**
+together turned trainable networks into the deep-learning revolution — and what
+each one contributed.
+
+_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 7."_

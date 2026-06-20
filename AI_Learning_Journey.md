@@ -18,8 +18,8 @@ current one is understood.
 3. ✅ The obstacles that broke symbolic AI
 4. ✅ The big idea: learning from data instead of rules
 5. ✅ The first neural network (the perceptron) — and what broke it
-6. ⏳ Backpropagation — teaching networks to learn  ← **RESUME HERE NEXT**
-7. ⬜ Deep learning — depth, data, and GPUs
+6. ✅ Backpropagation — teaching networks to learn
+7. ⏳ Deep learning — depth, data, and GPUs  ← **RESUME HERE NEXT**
 8. ⬜ Representing meaning (word embeddings)
 9. ⬜ Handling sequences (RNNs / LSTMs) and their limits
 10. ⬜ Attention & the Transformer
@@ -94,8 +94,29 @@ Four walls, all rooted in "humans must hand-write every rule":
   but nobody knew **how to train the hidden middle layers** (no "right answer"
   for them). → solved next by **backpropagation**.
 
-### Lesson 6 — Backpropagation  *(NEXT — not started)*
+### Lesson 6 — Backpropagation (Teaching the Hidden Layers)  ✅
 
-_Resume here next session. Goal: how training the hidden layers was solved,
-which thawed the winter and made deep networks possible._
+- **The blocking problem:** stacked neurons *can* solve XOR, but the hidden
+  middle layers have **no target answer** to compare against — so how do you
+  tune their knobs? This is the **credit/blame assignment problem.**
+- **Key reframe:** a network is just **functions inside functions**
+  (`output = layer3(layer2(layer1(input)))`). The loss at the end depends on
+  every weight, deep ones included, through a **chain** of steps.
+- **What we need per weight:** the **gradient** — the slope of error vs. that
+  weight (which way + how steeply to nudge it). Nudging downhill = **gradient
+  descent** (same idea as Lesson 4, now for buried knobs).
+- **The chain rule:** a nudge travels through a chain of steps; **multiply each
+  link's local rate** to get the deep weight's effect on the loss (rates
+  compound → multiply, not add). Each neuron only needs its own local rate.
+- **Backpropagation = two passes:** (1) **forward** — run input through, compute
+  the loss; (2) **backward** — push the error backward layer by layer, each layer
+  computing its own weights' gradients *and* how much the previous layer's output
+  must change, passing that back. Shared chunks get reused → fast.
+- **Then:** gradient descent nudges every weight; repeat forward→backward→nudge
+  millions of times. Same **guess→check→adjust** loop, now working through any
+  depth.
+- **Why it mattered:** **Rumelhart, Hinton & Williams (1986)** popularized it,
+  answering Lesson 5's blocking question. Networks could finally go **deep** and
+  learn internal features nobody hand-designed. Still how every modern net
+  (GPT included) learns.
 
