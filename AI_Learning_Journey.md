@@ -19,8 +19,8 @@ current one is understood.
 4. ✅ The big idea: learning from data instead of rules
 5. ✅ The first neural network (the perceptron) — and what broke it
 6. ✅ Backpropagation — teaching networks to learn
-7. ⏳ Deep learning — depth, data, and GPUs  ← **RESUME HERE NEXT**
-8. ⬜ Representing meaning (word embeddings)
+7. ✅ Deep learning — depth, data, and GPUs
+8. ⏳ Representing meaning (word embeddings)  ← **RESUME HERE NEXT**
 9. ⬜ Handling sequences (RNNs / LSTMs) and their limits
 10. ⬜ Attention & the Transformer
 11. ⬜ Large Language Models (GPT and friends)
@@ -119,4 +119,26 @@ Four walls, all rooted in "humans must hand-write every rule":
   answering Lesson 5's blocking question. Networks could finally go **deep** and
   learn internal features nobody hand-designed. Still how every modern net
   (GPT included) learns.
+
+### Lesson 7 — Deep Learning: Depth, Data, and GPUs  ✅
+
+- **The puzzle:** backprop made deep nets trainable in 1986, yet the revolution
+  waited until **~2012**. Three things had to arrive *together*.
+- **What depth buys:** layers build a **hierarchy of features** (pixels → edges →
+  parts → objects). The net **invents its own features** (representation
+  learning) — finally cracking Symbolic AI's **Obstacle #4 (perception)** without
+  hand-written rules.
+- **Why it stalled 25 years — three walls:**
+  1. **Too little data** → millions of knobs **overfit** (memorize, don't
+     generalize).
+  2. **Too little compute** → training took months on CPUs.
+  3. **Vanishing gradients** → the chain rule (Lesson 6) multiplies small local
+     rates (old `sigmoid`) → gradient ≈ 0 at early layers → they won't learn.
+- **What broke the walls (~2012):** **ImageNet** (~14M labeled images = data);
+  **GPUs** (built for parallel **matrix multiply** = exactly neural-net math →
+  10–100× faster); **ReLU** + better init (rate stays 1 → gradients survive).
+- **Watershed:** **AlexNet (2012)** demolished the ImageNet contest → modern AI
+  era begins.
+- **The formula:** **depth + big data + GPUs**, all at once. Remove any one and
+  it collapses — which is why 1986's trainable nets had to wait until 2012.
 

@@ -8,10 +8,10 @@ lesson (not just the short summaries in `AI_Learning_Journey.md`).
 only after you say **"understood"**. Progress is logged in
 `AI_Learning_Journey.md`; the deep notes live here.
 
-**Status:** Lessons 1–6 complete. **Resume at Lesson 7 — Deep Learning.**
+**Status:** Lessons 1–7 complete. **Resume at Lesson 8 — Word Embeddings.**
 
-To continue on another device: pull this repo, read up through Lesson 6, then
-tell Claude *"let's continue the AI lessons — start Lesson 7."*
+To continue on another device: pull this repo, read up through Lesson 7, then
+tell Claude *"let's continue the AI lessons — start Lesson 8."*
 
 ---
 
@@ -23,8 +23,8 @@ tell Claude *"let's continue the AI lessons — start Lesson 7."*
 4. ✅ The big idea: learning from data instead of rules
 5. ✅ The first neural network (the perceptron) — and what broke it
 6. ✅ Backpropagation — teaching networks to learn
-7. ⬜ **Deep learning — depth, data, and GPUs  ← RESUME HERE**
-8. ⬜ Representing meaning (word embeddings)
+7. ✅ Deep learning — depth, data, and GPUs
+8. ⬜ **Representing meaning (word embeddings)  ← RESUME HERE**
 9. ⬜ Handling sequences (RNNs / LSTMs) and their limits
 10. ⬜ Attention & the Transformer
 11. ⬜ Large Language Models (GPT and friends)
@@ -512,10 +512,125 @@ network learns.
 
 ---
 
-# Lesson 7 — Deep Learning  *(NEXT — not started)*
+# Lesson 7 — Deep Learning: Depth, Data, and GPUs
 
-Resume here. Goal: why **depth** (many layers), **big data**, and **GPUs**
-together turned trainable networks into the deep-learning revolution — and what
-each one contributed.
+Lesson 6 ended in triumph: backpropagation made multi-layer networks
+**trainable**. So you'd expect deep learning to explode in 1986. It didn't. It
+took **~25 more years** — the revolution hit around **2012**. That gap is the
+whole story of this lesson. Three things had to show up *together.*
 
-_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 7."_
+## First: what does "deep" actually buy you?
+
+"Deep" = many layers stacked. But the magic isn't just "more knobs." It's that
+each layer **builds on the one before it**, learning features in a **hierarchy.**
+
+Picture a network looking at a photo, hunting for a cat:
+
+```
+raw pixels
+   → layer 1: edges and tiny color blobs
+      → layer 2: corners, curves, textures (built from edges)
+         → layer 3: parts — an ear, an eye, a paw (built from curves)
+            → layer 4: whole objects — "this arrangement of parts = cat"
+```
+
+Nobody *told* it "look for ears." It **discovered** that ears are useful, on its
+own, by minimizing error. This is **representation learning** — the network
+invents its own features. Remember Symbolic AI's **Obstacle #4** (Lesson 3): you
+can't hand-write the rules for "is this a cat?" Deep learning's answer: *don't.*
+Let depth learn the features from data. That obstacle, the one humans found
+effortless and machines found impossible, is what this lesson finally kills.
+
+## So why did it stall for 25 years?
+
+Backprop existed, but deep nets *still* refused to work well. Three walls:
+
+**Wall 1 — not enough data.** A deep net has millions of knobs. With few
+examples, it doesn't learn the *pattern* — it **memorizes** the training set
+(called **overfitting**) and falls apart on anything new. Lots of knobs *demand*
+lots of data.
+
+**Wall 2 — not enough compute.** Training = run millions of examples through
+millions of weights, forward *and* backward, millions of times. That's
+astronomical multiplication. On 1990s CPUs, training a serious deep net could
+take *months*. Nobody waits months per experiment.
+
+**Wall 3 — vanishing gradients.** This one comes straight out of Lesson 6's chain
+rule. The backward pass **multiplies** local rates down the chain. If those rates
+are each less than 1 (the old `sigmoid` activation squashed them small), then
+multiplying many of them together drives the gradient toward **zero** by the time
+it reaches the early layers:
+
+```
+0.2 × 0.2 × 0.2 × 0.2 × 0.2  ≈  0.0003   ← almost no signal left
+```
+
+So the early layers — the ones learning edges, the foundation everything else
+builds on — barely got any error signal. They **wouldn't learn.** Deep networks
+were, in practice, untrainable past a few layers.
+
+## What changed around 2006–2012
+
+All three walls fell at roughly the same time:
+
+**Data arrived.** The internet produced enormous labeled datasets. The landmark:
+**ImageNet** — ~14 million hand-labeled images. Suddenly the knobs had enough
+examples to generalize instead of memorize.
+
+**GPUs arrived.** A **GPU** (graphics processing unit) was built to render video
+games: do the *same simple math* on thousands of numbers **at once** (in
+parallel). It turns out a neural network's core operation is exactly that —
+**matrix multiplication**, the same number-crunching repeated across the whole
+layer. Researchers repurposed gaming hardware and got **10–100× faster**
+training. Months became days.
+
+**The training tricks arrived.** The big one for Wall 3: a new activation
+function, **ReLU** (`output = max(0, input)`). Its rate is just 1 for active
+neurons, so multiplying down the chain *doesn't* shrink the gradient to nothing.
+Vanishing gradients eased; deep networks finally trained end-to-end. (Plus better
+weight initialization and other refinements.)
+
+## The watershed: AlexNet, 2012
+
+The proof landed at the **2012 ImageNet competition.** A deep network called
+**AlexNet** (Krizhevsky, Sutskever, Hinton) — many layers, trained on GPUs over
+ImageNet — didn't just win, it **demolished** the field. Image-recognition error
+dropped by a huge margin over the hand-engineered methods that had ruled for
+years.
+
+That result flipped the field overnight. Everyone saw: depth works *now*, given
+enough data and compute. The modern AI era starts here.
+
+## The formula — why all three, why together
+
+```
+DEPTH        → learns its own hierarchical features (no hand-engineering)
++ BIG DATA   → enough examples that millions of knobs generalize, don't memorize
++ GPUs       → training finishes this decade, not the next
+= DEEP LEARNING
+```
+
+Pull out any one and it collapses: depth without data overfits; depth without
+GPUs never finishes; data + GPUs without depth is just a shallow model that can't
+learn rich features. That co-dependence is *exactly* why 1986's trainable
+networks had to wait until 2012 to change the world.
+
+**Takeaway:** **Deep learning** = stacking many layers so the network learns its
+own **hierarchy of features** (edges → parts → objects), finally cracking
+perception — Symbolic AI's unsolvable Obstacle #4. It stalled for 25 years on
+three walls: too little **data** (overfitting), too little **compute**, and
+**vanishing gradients** (the chain rule multiplying small rates to zero). Around
+2012 all three fell — **ImageNet** (data), **GPUs** (parallel matrix math =
+compute), and **ReLU** + tricks (gradients) — and **AlexNet** proved it. The
+recipe **depth + data + GPUs**, all at once, is the deep-learning revolution.
+
+---
+
+# Lesson 8 — Representing Meaning (Word Embeddings)  *(NEXT — not started)*
+
+Resume here. Goal: how do you feed *words* to a network that only eats numbers?
+The answer — **word embeddings** — turns each word into a vector of numbers
+positioned so that **meaning becomes geometry** (similar words sit close;
+relationships become directions, e.g. king − man + woman ≈ queen).
+
+_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 8."_
