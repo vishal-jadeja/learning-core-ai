@@ -8,10 +8,10 @@ lesson (not just the short summaries in `AI_Learning_Journey.md`).
 only after you say **"understood"**. Progress is logged in
 `AI_Learning_Journey.md`; the deep notes live here.
 
-**Status:** Lessons 1–7 complete. **Resume at Lesson 8 — Word Embeddings.**
+**Status:** Lessons 1–8 complete. **Resume at Lesson 9 — Sequences (RNNs/LSTMs).**
 
-To continue on another device: pull this repo, read up through Lesson 7, then
-tell Claude *"let's continue the AI lessons — start Lesson 8."*
+To continue on another device: pull this repo, read up through Lesson 8, then
+tell Claude *"let's continue the AI lessons — start Lesson 9."*
 
 ---
 
@@ -24,8 +24,8 @@ tell Claude *"let's continue the AI lessons — start Lesson 8."*
 5. ✅ The first neural network (the perceptron) — and what broke it
 6. ✅ Backpropagation — teaching networks to learn
 7. ✅ Deep learning — depth, data, and GPUs
-8. ⬜ **Representing meaning (word embeddings)  ← RESUME HERE**
-9. ⬜ Handling sequences (RNNs / LSTMs) and their limits
+8. ✅ Representing meaning (word embeddings)
+9. ⬜ **Handling sequences (RNNs / LSTMs) and their limits  ← RESUME HERE**
 10. ⬜ Attention & the Transformer
 11. ⬜ Large Language Models (GPT and friends)
 12. ⬜ From a model to an *agent* (tools, memory, planning, loops)
@@ -626,11 +626,137 @@ recipe **depth + data + GPUs**, all at once, is the deep-learning revolution.
 
 ---
 
-# Lesson 8 — Representing Meaning (Word Embeddings)  *(NEXT — not started)*
+# Lesson 8 — Representing Meaning (Word Embeddings)
 
-Resume here. Goal: how do you feed *words* to a network that only eats numbers?
-The answer — **word embeddings** — turns each word into a vector of numbers
-positioned so that **meaning becomes geometry** (similar words sit close;
-relationships become directions, e.g. king − man + woman ≈ queen).
+Every lesson so far fed networks numbers — pixels, hours studied. But the road
+ahead is **language**, and a network only does math on numbers. So the very first
+question of modern AI is brutally basic:
 
-_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 8."_
+> How do you hand the word **"king"** to a machine that can only multiply numbers?
+
+Get this wrong and nothing downstream works. The answer — **word embeddings** — is
+one of the most beautiful ideas in the field.
+
+## Naive attempt 1: just number the words
+
+`king = 1`, `queen = 2`, `apple = 3`, ... Assign each word an ID.
+
+Broken instantly. Numbers carry arithmetic the words don't. This says
+`apple (3) > queen (2)`, and `king + queen = apple` (`1 + 2 = 3`). Nonsense
+relationships smuggled in for free. The network would "learn" from garbage
+structure.
+
+## Naive attempt 2: one-hot encoding
+
+Give every word its own slot. A vocabulary of 50,000 words → each word is a vector
+of 50,000 numbers, **all zeros except a single 1** in that word's slot:
+
+```
+cat       = [0, 0, 1, 0, 0, ... 0]
+dog       = [0, 1, 0, 0, 0, ... 0]
+democracy = [0, 0, 0, 0, 1, ... 0]
+```
+
+No false arithmetic now — but two new problems:
+
+1. **Gigantic and wasteful** — 50,000-long vectors that are 99.998% zeros.
+2. **No meaning at all.** Every word is exactly equidistant from every other.
+   `cat`↔`dog` is *just as far* as `cat`↔`democracy`. The encoding knows
+   *identity* ("this is word #3") but **zero similarity.** A network gets no head
+   start — it'd have to learn that cats and dogs are related entirely from
+   scratch.
+
+## The big idea: dense vectors where position = meaning
+
+**Word embedding:** represent each word as a *short* vector of, say, **300
+numbers** (dense — most nonzero), and arrange them in that space so that
+**location encodes meaning.** Similar words sit **close together**; unrelated
+words sit far apart.
+
+A toy 2-D version (real ones are ~300-D, but the idea is identical):
+
+```
+        royalty
+          ↑
+   king ● │ ● queen
+          │
+──────────┼────────── →  (gender:  male ····· female)
+          │
+   man  ● │ ● woman
+          │
+                       cat ●  ● dog        ← animals cluster together,
+                                              far from the royalty cluster
+```
+
+Now `cat` and `dog` are neighbors; `cat` and `democracy` are across the map.
+**Similarity became distance.** A network reading these vectors gets meaning baked
+into the input.
+
+## Where do the numbers come from? Learned, not assigned.
+
+Nobody hand-places 50,000 words in 300-D space. The vectors are **learned from
+data** — same guess→check→adjust loop (Lesson 4), same "learn the representation"
+spirit as deep learning's features (Lesson 7).
+
+The guiding principle (the **distributional hypothesis**):
+
+> *"You shall know a word by the company it keeps."*
+
+Words that show up in **similar contexts** mean similar things. "The ___ purred
+on the sofa" — `cat` and `kitten` both fit; `democracy` doesn't. So train a
+network on a dumb-sounding task over billions of sentences — e.g. **predict a word
+from its neighbors** (this is **word2vec**, 2013). To get good at that prediction,
+the network is *forced* to give words-with-similar-company similar vectors. The
+meaningful arrangement falls out as a **side effect** of the prediction task.
+
+## The magic: meaning becomes geometry
+
+Once trained, the space has structure nobody designed — **relationships turn into
+consistent directions.** The famous one:
+
+```
+king  −  man  +  woman  ≈  queen
+```
+
+Read it as travel directions: start at `king`, subtract the "male" direction, add
+the "female" direction → you land on `queen`. There's a **"gender" direction** in
+the space, and it's the *same* direction for `man→woman`, `king→queen`,
+`actor→actress`. More:
+
+```
+Paris − France + Italy ≈ Rome      (a "capital-of" direction)
+walk  − walking + swimming ≈ swim  (a verb-tense direction)
+```
+
+**Arithmetic on words works** — because meaning got encoded as geometry. That's
+the payoff: relationships aren't stored as rules (Symbolic AI's doomed approach),
+they *emerge* as directions in a learned space.
+
+## Why this is the bridge to everything next
+
+Embeddings convert language into numbers that are **rich with meaning**, not
+arbitrary IDs. This is **layer zero** of every modern language model: GPT's first
+move is to embed each token into a vector exactly like this. Everything later —
+sequences, attention, the Transformer — operates on these meaning-vectors.
+
+**Takeaway:** Networks eat numbers, so words must become numbers — but **IDs**
+smuggle in false arithmetic and **one-hot** vectors are huge and meaningless
+(every word equidistant). **Word embeddings** fix both: each word is a short dense
+vector positioned so **meaning = geometry** — similar words sit close, and
+relationships become **consistent directions** (`king − man + woman ≈ queen`).
+The vectors are **learned** from context ("a word by the company it keeps,"
+word2vec). This turns language into something a network can compute on, and it's
+the foundation every LLM is built on top of.
+
+---
+
+# Lesson 9 — Handling Sequences (RNNs / LSTMs) and Their Limits  *(NEXT — not started)*
+
+Resume here. Goal: embeddings give us word-vectors, but meaning depends on
+**order** ("dog bites man" ≠ "man bites dog"). How does a network read a
+*sequence* and carry **memory** across it? Covers **RNNs** (a loop with a hidden
+"memory" state), the **vanishing-gradient** problem over long sequences, the
+**LSTM** fix (gates), and the wall that remained — **no long-range memory + no
+parallelism** — which set up the need for **attention**.
+
+_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 9."_

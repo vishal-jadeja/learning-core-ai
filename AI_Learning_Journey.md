@@ -20,8 +20,8 @@ current one is understood.
 5. ✅ The first neural network (the perceptron) — and what broke it
 6. ✅ Backpropagation — teaching networks to learn
 7. ✅ Deep learning — depth, data, and GPUs
-8. ⏳ Representing meaning (word embeddings)  ← **RESUME HERE NEXT**
-9. ⬜ Handling sequences (RNNs / LSTMs) and their limits
+8. ✅ Representing meaning (word embeddings)
+9. ⏳ Handling sequences (RNNs / LSTMs) and their limits  ← **RESUME HERE NEXT**
 10. ⬜ Attention & the Transformer
 11. ⬜ Large Language Models (GPT and friends)
 12. ⬜ From a model to an *agent* (tools, memory, planning, loops)
@@ -141,4 +141,26 @@ Four walls, all rooted in "humans must hand-write every rule":
   era begins.
 - **The formula:** **depth + big data + GPUs**, all at once. Remove any one and
   it collapses — which is why 1986's trainable nets had to wait until 2012.
+
+### Lesson 8 — Representing Meaning (Word Embeddings)  ✅
+
+- **The entry problem:** networks only do math on numbers — so how do you feed a
+  *word* ("king") to one?
+- **Naive fails:** (1) **word IDs** (`king=1, queen=2`) smuggle in false
+  arithmetic/ordering; (2) **one-hot** vectors (one `1` in a 50k-long vector) are
+  huge, sparse, and make *every* word equidistant → encode identity but **zero
+  similarity**.
+- **The idea — word embeddings:** each word = a short **dense** vector (~300
+  numbers) positioned so **meaning = geometry**. Similar words sit **close**
+  (`cat`↔`dog` near, `cat`↔`democracy` far).
+- **Learned, not assigned:** trained from data via the **distributional
+  hypothesis** — *"know a word by the company it keeps."* Train a net to predict a
+  word from its neighbors (**word2vec, 2013**); meaningful vectors fall out as a
+  **side effect**.
+- **The magic:** relationships become **consistent directions** →
+  `king − man + woman ≈ queen`, `Paris − France + Italy ≈ Rome`. Word arithmetic
+  works because meaning is encoded as geometry.
+- **Why it matters:** this is **layer zero** of every LLM — GPT first embeds each
+  token into a meaning-vector. Everything later (sequences, attention) runs on
+  these vectors.
 
