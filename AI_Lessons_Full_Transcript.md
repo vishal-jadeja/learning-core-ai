@@ -8,10 +8,10 @@ lesson (not just the short summaries in `AI_Learning_Journey.md`).
 only after you say **"understood"**. Progress is logged in
 `AI_Learning_Journey.md`; the deep notes live here.
 
-**Status:** Lessons 1–8 complete. **Resume at Lesson 9 — Sequences (RNNs/LSTMs).**
+**Status:** Lessons 1–9 complete. **Resume at Lesson 10 — Attention & the Transformer.**
 
-To continue on another device: pull this repo, read up through Lesson 8, then
-tell Claude *"let's continue the AI lessons — start Lesson 9."*
+To continue on another device: pull this repo, read up through Lesson 9, then
+tell Claude *"let's continue the AI lessons — start Lesson 10."*
 
 ---
 
@@ -25,8 +25,8 @@ tell Claude *"let's continue the AI lessons — start Lesson 9."*
 6. ✅ Backpropagation — teaching networks to learn
 7. ✅ Deep learning — depth, data, and GPUs
 8. ✅ Representing meaning (word embeddings)
-9. ⬜ **Handling sequences (RNNs / LSTMs) and their limits  ← RESUME HERE**
-10. ⬜ Attention & the Transformer
+9. ✅ Handling sequences (RNNs / LSTMs) and their limits
+10. ⬜ **Attention & the Transformer  ← RESUME HERE**
 11. ⬜ Large Language Models (GPT and friends)
 12. ⬜ From a model to an *agent* (tools, memory, planning, loops)
 
@@ -750,13 +750,137 @@ the foundation every LLM is built on top of.
 
 ---
 
-# Lesson 9 — Handling Sequences (RNNs / LSTMs) and Their Limits  *(NEXT — not started)*
+# Lesson 9 — Handling Sequences (RNNs / LSTMs) and Their Limits
 
-Resume here. Goal: embeddings give us word-vectors, but meaning depends on
-**order** ("dog bites man" ≠ "man bites dog"). How does a network read a
-*sequence* and carry **memory** across it? Covers **RNNs** (a loop with a hidden
-"memory" state), the **vanishing-gradient** problem over long sequences, the
-**LSTM** fix (gates), and the wall that remained — **no long-range memory + no
-parallelism** — which set up the need for **attention**.
+Lesson 8 gave us word-vectors. But a sentence isn't a *bag* of words — it's a
+**sequence**, and order is meaning:
 
-_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 9."_
+```
+"dog bites man"   ≠   "man bites dog"
+```
+
+Same three vectors, opposite meaning. A plain feedforward network (everything so
+far) takes a **fixed-size** input and treats its inputs **independently** — no
+notion of order, no notion of "what came before." Language needs both, plus it
+comes in **variable lengths**. New machinery required.
+
+## The idea: read one word at a time, and remember
+
+Process the sentence **left to right, one word at a time**, and carry a **memory**
+of everything seen so far. That running memory is the **hidden state** — a vector
+that summarizes the past.
+
+This is a **Recurrent Neural Network (RNN)** — a network with a **loop**:
+
+```
+ word1        word2        word3        word4
+   │            │            │            │
+   ▼            ▼            ▼            ▼
+[ net ]─h1─►[ net ]─h2─►[ net ]─h3─►[ net ]─►  final summary
+   ▲            ▲            ▲            ▲
+  same weights reused at every step ───────┘
+```
+
+At each step the network takes **(current word + previous hidden state)** and
+produces a **new hidden state** — updated memory — which feeds the next step. The
+*same* weights run at every step (that's the "recurrence"). The hidden state is a
+running summary; the final one is a summary of the whole sentence.
+
+This was the workhorse: translation, speech recognition, text generation. Finally,
+order and memory and any length.
+
+## Wall 1: it forgets the distant past (vanishing gradients, again)
+
+To learn, backprop runs **backward through every time step** — called *backprop
+through time*. But that makes one very **deep chain**: effectively one layer per
+word. And we already met this monster in Lesson 7 — the **chain rule multiplies
+many small rates → the gradient vanishes** toward the start of the sequence.
+
+Consequence: the network **forgets early words.** The signal from far back fades
+out. The classic failure:
+
+```
+"I grew up in France ... [40 words of other stuff] ... so I speak fluent ___"
+```
+
+To fill the blank with **French**, it must recall **France** from way back — but
+the plain RNN's memory of it has decayed to nothing. Short-range: fine.
+Long-range: amnesia.
+
+## The fix: LSTM (Long Short-Term Memory)
+
+The **LSTM** adds a second track — a **cell state**, a kind of memory *conveyor
+belt* that runs straight across all the steps — plus little learned **gates**:
+
+- a **forget gate** — what to erase from memory,
+- an **input gate** — what new info to write in,
+- an **output gate** — what to expose to the next step.
+
+The gates let information ride the conveyor belt across many steps **without being
+squashed** at each one, so gradients survive and long-range memory works far
+better. ("France" can now persist 40 words later.) The **GRU** is a popular
+simpler cousin. For years, LSTMs were *the* sequence model.
+
+## Wall 2 + 3: the limits even LSTMs couldn't beat
+
+LSTMs ruled — then got replaced. Two reasons they had to go:
+
+**The information bottleneck.** In a sequence-to-sequence setup (e.g.
+translation), the encoder reads the *whole* input and crams it into **one
+fixed-size vector** — the final hidden state — and the decoder must generate the
+*entire* output from **only that vector.** Crucially the vector is the **same
+width no matter the input length**:
+
+```
+input: 5 words   →  hidden state = 512 numbers
+input: 500 words →  hidden state = 512 numbers   ← SAME size
+```
+
+More input → more detail forced into the **same fixed container** → detail gets
+crushed out (a hard information ceiling). Two squeezes happen: *within the loop*,
+each new word overwrites the fixed-size memory (the forget gate erases to make
+room); *at the handoff*, the decoder generating output word #30 can only see that
+one summary — it can't reach back to "what exactly was input word 7?" Analogy:
+read an entire book, write **one index card**, then reproduce the book from only
+the card. Short story fits; a 400-page novel doesn't.
+
+**Forced to be sequential.** By design you must process word 1 **before** word 2
+**before** word 3 — each step needs the previous step's hidden state. So you
+**cannot parallelize** across the sequence. Recall Lesson 7: GPUs win by doing
+thousands of operations **at once.** An inherently one-at-a-time model **wastes
+the hardware** — training on huge text is painfully slow. In the deep-learning
+era, *that* is fatal.
+
+## The cliffhanger
+
+We need something that:
+
+1. lets **any word directly look at any other word**, regardless of distance — no
+   single-vector bottleneck, no forgetting, and
+2. does it **all at once, in parallel** — to finally exploit GPUs on language.
+
+That mechanism is **attention**, and the architecture built entirely from it is
+the **Transformer** — Lesson 10, the one everything modern (GPT included) stands
+on.
+
+**Takeaway:** Sequences need **order + memory + variable length**, so the **RNN**
+reads one word at a time, carrying a **hidden state** (running memory) via a loop
+of shared weights. But backprop-through-time **vanishes gradients → it forgets the
+distant past**; **LSTMs** fix much of that with a **cell-state conveyor belt and
+gates**. Two walls remained: the whole sequence is jammed through **one fixed-size
+hidden state** (bottleneck), and processing is **strictly sequential** (can't
+parallelize → wastes GPUs). Escaping both demanded a new idea — **attention.**
+
+---
+
+# Lesson 10 — Attention & the Transformer  *(NEXT — not started)*
+
+Resume here. Goal: the architecture the whole journey was building toward.
+**Attention** lets every word **look directly at every other word** and pull in
+what's relevant — no fixed-size bottleneck, no distance decay — and it runs **in
+parallel** (no recurrence), finally exploiting GPUs. The **Transformer**
+(*"Attention Is All You Need,"* 2017) is built entirely from stacked attention.
+Covers query/key/value, self-attention, multi-head attention, positional
+encoding, and why this design unlocked training at massive scale → LLMs.
+
+_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 10."_

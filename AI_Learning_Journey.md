@@ -21,8 +21,8 @@ current one is understood.
 6. ✅ Backpropagation — teaching networks to learn
 7. ✅ Deep learning — depth, data, and GPUs
 8. ✅ Representing meaning (word embeddings)
-9. ⏳ Handling sequences (RNNs / LSTMs) and their limits  ← **RESUME HERE NEXT**
-10. ⬜ Attention & the Transformer
+9. ✅ Handling sequences (RNNs / LSTMs) and their limits
+10. ⏳ Attention & the Transformer  ← **RESUME HERE NEXT**
 11. ⬜ Large Language Models (GPT and friends)
 12. ⬜ From a model to an *agent* (tools, memory, planning, loops)
 
@@ -163,4 +163,26 @@ Four walls, all rooted in "humans must hand-write every rule":
 - **Why it matters:** this is **layer zero** of every LLM — GPT first embeds each
   token into a meaning-vector. Everything later (sequences, attention) runs on
   these vectors.
+
+### Lesson 9 — Handling Sequences (RNNs / LSTMs) and Their Limits  ✅
+
+- **Why needed:** a sentence is a **sequence** — order = meaning ("dog bites man"
+  ≠ "man bites dog"). Plain feedforward nets take fixed-size input, treat inputs
+  independently, no memory of order. Need order + memory + variable length.
+- **RNN:** read one word at a time in a **loop**; carry a **hidden state**
+  (running memory) updated each step with the same shared weights. Final state =
+  summary of the whole sequence.
+- **Wall 1 — forgets the past:** training = **backprop through time** = one very
+  deep chain → **vanishing gradients** (Lesson 7) → early words fade ("I grew up
+  in France ... I speak fluent ___" fails).
+- **LSTM fix:** adds a **cell-state conveyor belt** + **gates** (forget / input /
+  output) that learn what to keep/erase/expose → info rides across many steps
+  un-squashed → much better long-range memory. (GRU = simpler cousin.)
+- **Walls that killed them:** (1) **bottleneck** — whole sequence squeezed through
+  **one fixed-size hidden state** (same width for 5 or 500 words → detail
+  crushed; decoder sees only that one summary vector); (2) **strictly
+  sequential** — must do word 1 before 2 before 3 → **can't parallelize** →
+  wastes GPUs → slow on big data.
+- **The escape (next):** let any word **look directly at any other word**, in
+  **parallel** → **attention / the Transformer**.
 
