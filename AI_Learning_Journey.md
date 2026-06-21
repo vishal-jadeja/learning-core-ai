@@ -22,8 +22,8 @@ current one is understood.
 7. ✅ Deep learning — depth, data, and GPUs
 8. ✅ Representing meaning (word embeddings)
 9. ✅ Handling sequences (RNNs / LSTMs) and their limits
-10. ⏳ Attention & the Transformer  ← **RESUME HERE NEXT**
-11. ⬜ Large Language Models (GPT and friends)
+10. ✅ Attention & the Transformer
+11. ⏳ Large Language Models (GPT and friends)  ← **RESUME HERE NEXT**
 12. ⬜ From a model to an *agent* (tools, memory, planning, loops)
 
 Legend: ✅ understood · ⏳ in progress · ⬜ not started
@@ -185,4 +185,39 @@ Four walls, all rooted in "humans must hand-write every rule":
   wastes GPUs → slow on big data.
 - **The escape (next):** let any word **look directly at any other word**, in
   **parallel** → **attention / the Transformer**.
+
+### Lesson 10 — Attention & the Transformer  ✅
+
+- **The need (from Lesson 9):** let every word **look directly at every other
+  word** (no fixed-size bottleneck, no forgetting) and do it **in parallel**
+  (exploit GPUs). That mechanism = **attention**.
+- **The intuition:** for each word, compute **how much to focus on every other
+  word**, then rebuild that word by pulling in info from the words it focused on.
+  (e.g. "...because **it** was tired" → "it" attends strongly to "animal".)
+- **Query / Key / Value (the heart):** each word emits three vectors (its vector ×
+  learned weight matrices). **Q** = what I'm looking for; **K** = label each word
+  advertises; **V** = content a word offers. Steps: (1) my Q · every word's K →
+  match **scores**; (2) **softmax** → focus % that sum to 100; (3) **weighted
+  blend of Values** → my new context-aware vector.
+- **Why it beats RNNs:** every word reaches every word **directly** (distance
+  irrelevant, nothing forgotten) and it's all **matrix multiplication → fully
+  parallel** (no recurrence).
+- **Self-attention:** every word does this against all words at once → same word
+  gets a **context-shaped** vector ("bank" by "river" ≠ "bank" by "money").
+- **Multi-head attention:** run attention several times in parallel (8–12
+  **heads**), each a different "lens" (grammar, reference, …), then combine.
+- **Positional encoding:** attention is order-blind (a *bag* of words), so add a
+  position "stamp" to each word vector → recover word order **without** forcing
+  sequential processing.
+- **The Transformer (2017, "Attention Is All You Need"):** stack blocks of
+  [multi-head self-attention → per-word feedforward] N times, no recurrence.
+- **Why it changed everything:** **fully parallel + no distance limit + scales
+  predictably** → train on enormous text with thousands of GPUs → directly
+  enables **LLMs** (next).
+
+### Lesson 11 — Large Language Models (GPT and friends)  *(NEXT — not started)*
+
+_Resume here next session. Goal: what happens when you scale the Transformer to
+billions of parameters trained on much of the internet — next-token prediction,
+emergence/scaling, pretraining vs. fine-tuning, RLHF._
 

@@ -8,10 +8,10 @@ lesson (not just the short summaries in `AI_Learning_Journey.md`).
 only after you say **"understood"**. Progress is logged in
 `AI_Learning_Journey.md`; the deep notes live here.
 
-**Status:** Lessons 1–9 complete. **Resume at Lesson 10 — Attention & the Transformer.**
+**Status:** Lessons 1–10 complete. **Resume at Lesson 11 — Large Language Models.**
 
-To continue on another device: pull this repo, read up through Lesson 9, then
-tell Claude *"let's continue the AI lessons — start Lesson 10."*
+To continue on another device: pull this repo, read up through Lesson 10, then
+tell Claude *"let's continue the AI lessons — start Lesson 11."*
 
 ---
 
@@ -26,8 +26,8 @@ tell Claude *"let's continue the AI lessons — start Lesson 10."*
 7. ✅ Deep learning — depth, data, and GPUs
 8. ✅ Representing meaning (word embeddings)
 9. ✅ Handling sequences (RNNs / LSTMs) and their limits
-10. ⬜ **Attention & the Transformer  ← RESUME HERE**
-11. ⬜ Large Language Models (GPT and friends)
+10. ✅ Attention & the Transformer
+11. ⬜ **Large Language Models (GPT and friends)  ← RESUME HERE**
 12. ⬜ From a model to an *agent* (tools, memory, planning, loops)
 
 ---
@@ -873,14 +873,153 @@ parallelize → wastes GPUs). Escaping both demanded a new idea — **attention.
 
 ---
 
-# Lesson 10 — Attention & the Transformer  *(NEXT — not started)*
+# Lesson 10 — Attention & the Transformer
 
-Resume here. Goal: the architecture the whole journey was building toward.
-**Attention** lets every word **look directly at every other word** and pull in
-what's relevant — no fixed-size bottleneck, no distance decay — and it runs **in
-parallel** (no recurrence), finally exploiting GPUs. The **Transformer**
-(*"Attention Is All You Need,"* 2017) is built entirely from stacked attention.
-Covers query/key/value, self-attention, multi-head attention, positional
-encoding, and why this design unlocked training at massive scale → LLMs.
+The keystone of the journey — what GPT, Claude, and everything modern is built
+on. Lesson 9 left us needing two things: let any word look directly at any other
+word, and do it in parallel. Both got solved at once.
 
-_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 10."_
+## The problem, restated in one line
+
+An RNN carries meaning forward through a **single, shrinking memory**, one step
+at a time. We need the opposite: **let every word reach out and directly inspect
+every other word**, no matter how far apart — and do it **all simultaneously.**
+That mechanism is **attention.**
+
+## The core idea: words asking each other questions
+
+```
+"The animal didn't cross the street because it was too tired."
+```
+
+What does **"it"** refer to — the *animal* or the *street*? You know instantly:
+the animal (streets don't get tired). For a machine, **"it"** must *look around
+the sentence* and decide **which other words matter**: strong attention to
+"animal," weak to "street," almost none to "the."
+
+That's attention: for each word, compute **how much to focus on every other
+word**, then build a new, context-aware version of that word by **pulling in
+information from the words it focused on.**
+
+## How a word "looks around" — Query, Key, Value
+
+Think of a **library search**:
+
+- **Query (Q)** — what I'm looking for. ("I'm the word *it* — looking for the noun
+  I refer to.")
+- **Key (K)** — a label each word advertises. (*animal*: "I'm an animal, a noun, a
+  subject.")
+- **Value (V)** — the actual content a word offers once matched. (the meaning of
+  *animal*.)
+
+Every word produces all three (its vector × a learned weight matrix — the knobs
+from Lesson 4). Then, for one word:
+
+```
+1. Take MY query.
+2. Compare it against EVERY word's key  →  a match score for each word.
+      it · animal  = high     (strong match)
+      it · street  = low
+      it · the     = ~zero
+3. Turn the scores into percentages that add to 100%  (this step is "softmax"):
+      animal 85%,  street 10%,  the 2%,  ...
+4. Take a weighted blend of every word's VALUE, using those percentages:
+      new "it" = 0.85·(animal) + 0.10·(street) + ...
+```
+
+Result: the vector for "it" now **literally contains the meaning of "animal"**
+baked in. The word absorbed its context.
+
+> **This escapes both RNN walls.** No information funnels through a single fixed
+> vector — every word talks to every other word **directly** (distance doesn't
+> matter, nothing is forgotten). And steps 1–4 are just big matrix
+> multiplications, so **every word's attention is computed at once, in parallel** —
+> finally exploiting the GPU.
+
+## Self-attention: everyone does it at once
+
+When *every* word runs this against *all* words in the same sentence, it's
+**self-attention.** The output is a new set of word-vectors each enriched by
+relevant context. "Bank" near "river" pulls in different neighbors than "bank"
+near "money" — the *same word* gets a *different, context-shaped* representation.
+
+## Multi-head attention: many relationships at once
+
+One pass captures one kind of relationship. Language has many at once (grammar,
+reference, tone). So run attention **multiple times in parallel** — 8 or 12
+**"heads"**, each with its own Q/K/V knobs, each free to specialize:
+
+```
+Head 1 → tracks subject↔verb agreement
+Head 2 → tracks what pronouns refer to
+Head 3 → tracks adjective↔noun links
+...     (then all heads' results are combined)
+```
+
+Like reading the sentence through several lenses at once and merging the insights.
+
+## The one missing piece: order
+
+Attention treats the input as a **bag** of words — "dog bites man" and "man bites
+dog" look identical to it (no built-in position). RNNs got order free by reading
+left-to-right; attention threw that away for parallelism.
+
+Fix — **positional encoding:** before words enter, add a small position-signal
+(a numeric "stamp" for 1st, 2nd, 3rd...) to each word vector. The model can now
+tell order apart **without** processing sequentially. Parallelism *and* order.
+
+## Putting it together: the Transformer (2017)
+
+**"Attention Is All You Need"** threw away recurrence entirely and built a model
+from **stacked attention** (plus small per-word feedforward nets). One block:
+
+```
+   words + positional encoding
+            │
+   ┌────────▼─────────┐
+   │  multi-head      │   ← each word looks at all words
+   │  self-attention  │
+   ├──────────────────┤
+   │  feedforward net │   ← then each word is processed individually
+   └────────▲─────────┘
+            │   (stack this block N times — e.g. 12, 96, ...)
+            ▼
+     context-rich output
+```
+
+Stack it many times; each layer builds richer understanding on the last — the
+"hierarchy of features" idea (Lesson 7), now for language.
+
+## Why this changed everything
+
+Not just accuracy — **scalability**:
+
+- **Fully parallel** → train on *enormous* text using thousands of GPUs. The
+  RNN's fatal "one word at a time" is gone.
+- **No distance limit** → long-range meaning handled natively.
+- **Scales gracefully** → bigger (more layers/heads/data) keeps getting better,
+  *predictably.*
+
+That last property is the spark for LLMs: if a bigger Transformer on more text
+keeps getting smarter, what happens when you make it **massive**?
+
+**Takeaway:** **Attention** lets each word build a context-aware version of itself
+by **(1) issuing a Query, (2) matching it against every word's Key for focus
+scores, (3) pulling a weighted blend of their Values** — any word draws directly
+on any other, in **parallel**, no fixed-size bottleneck, no forgetting.
+**Multi-head** does this through several relationship lenses; **positional
+encoding** restores order without sequential processing. The **Transformer**
+(2017) stacks these, and being fully parallel it **scales to massive size** —
+exactly what makes modern LLMs possible.
+
+---
+
+# Lesson 11 — Large Language Models (GPT and friends)  *(NEXT — not started)*
+
+Resume here. Goal: what happens when you scale the Transformer to billions of
+parameters trained on much of the internet. Covers **next-token prediction** as
+the training objective, **pretraining vs. fine-tuning**, **scaling laws &
+emergence**, and **RLHF** (turning a raw text-predictor into a helpful assistant)
+— the bridge toward agents.
+
+_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 11."_
