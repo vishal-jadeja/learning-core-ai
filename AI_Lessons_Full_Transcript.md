@@ -8,10 +8,11 @@ lesson (not just the short summaries in `AI_Learning_Journey.md`).
 only after you say **"understood"**. Progress is logged in
 `AI_Learning_Journey.md`; the deep notes live here.
 
-**Status:** Lessons 1–11 complete. **Resume at Lesson 12 — From a Model to an Agent (finale).**
+**Status:** 🎓 COMPLETE — all 12 lessons done (2026-06-21).
 
-To continue on another device: pull this repo, read up through Lesson 11, then
-tell Claude *"let's continue the AI lessons — start Lesson 12."*
+This transcript now contains the full journey from "can a machine think?" (1950)
+to modern AI agents. Re-read any lesson anytime; ask Claude to go deeper on any
+topic or to do a hands-on build of a tiny agent.
 
 ---
 
@@ -28,7 +29,7 @@ tell Claude *"let's continue the AI lessons — start Lesson 12."*
 9. ✅ Handling sequences (RNNs / LSTMs) and their limits
 10. ✅ Attention & the Transformer
 11. ✅ Large Language Models (GPT and friends)
-12. ⬜ **From a model to an *agent* (tools, memory, planning, loops)  ← RESUME HERE**
+12. ✅ From a model to an *agent* (tools, memory, planning, loops)
 
 ---
 
@@ -1141,11 +1142,141 @@ align it into an assistant (GPT-3 → InstructGPT → **ChatGPT**). It's a power
 
 ---
 
-# Lesson 12 — From a Model to an Agent  *(NEXT — the finale)*
+# Lesson 12 — From a Model to an Agent  *(finale)*
 
-Resume here. Goal: how the "brain in a jar" LLM becomes an **agent** — giving it
-**tools** (search, code, APIs), **memory** (beyond the context window), and a
-**plan → act → observe loop** (the ReAct pattern) so it can take real,
-multi-step actions in the world. This is the destination of the whole journey.
+Lesson 11 left us with a caged thing: an LLM brilliant at **text in → text out**
+that can't look things up, act, or remember. This lesson opens the cage — where
+"AI" becomes an "AI **agent**."
 
-_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 12."_
+## The one insight that changes everything
+
+An LLM is extraordinarily good at *one* thing: **reading a situation described in
+text and reasoning about what to do next.** So:
+
+> What if the LLM's text **output** could *trigger real actions*, and the
+> **results** of those actions were fed back to it as new text — over and over,
+> in a loop?
+
+That's the entire concept. The LLM stays a pure text predictor; we **wrap a loop**
+around it that turns its words into actions and feeds reality back in.
+**Intelligence comes from the model; agency comes from the loop.** Three
+ingredients:
+
+## Ingredient 1 — Tools (hands for the brain)
+
+A **tool** is any function the model may use: web search, calculator, running
+code, querying a database, sending email, reading a file. Crucial subtlety:
+
+> The LLM **cannot actually run anything.** It only *outputs text requesting* an
+> action. A surrounding program (the **harness**) sees that request, **executes
+> it**, and pastes the result back into the model's input as text.
+
+```
+LLM outputs:   ACTION: search("height of Mount Everest")
+                       │
+            (the harness, not the LLM, runs the real search)
+                       │
+Harness feeds back:   OBSERVATION: "8,849 metres"
+```
+
+## Ingredient 2 — The loop (ReAct: Reason + Act)
+
+```
+   ┌──────────────────────────────────────┐
+   │  THOUGHT      (reason about what to   │
+   │               do next)                │
+   │  ACTION       (call a tool)           │
+   │  OBSERVATION  (get the result back)   │
+   └───────────────┬──────────────────────┘
+                   │  feed everything back in
+                   ▼   and loop again, until done
+```
+
+The model **thinks**, picks an **action**, sees the **observation**, thinks again
+with the new info — looping until it can give a final answer.
+
+## Watching it work
+
+Ask: *"What's the weather in the city hosting the next Summer Olympics?"* A plain
+LLM can't answer (knowledge frozen, no live weather). The agent loops:
+
+```
+THOUGHT:      I need to find the next Summer Olympics host city.
+ACTION:       search("next Summer Olympics host city")
+OBSERVATION:  "Los Angeles, 2028."
+
+THOUGHT:      Now I need the current weather in Los Angeles.
+ACTION:       get_weather("Los Angeles")
+OBSERVATION:  "24°C, sunny."
+
+THOUGHT:      I now have everything I need.
+FINAL ANSWER: The next Summer Olympics is in Los Angeles, where it's
+              currently 24°C and sunny.
+```
+
+The LLM **never searched and never checked weather** — it only produced thoughts
+and action requests; the harness did the real work. Chaining these solved a
+problem **no single LLM call could.**
+
+## Ingredient 3 — Memory (persist and plan)
+
+- **Short-term memory** = the **context window** — the running transcript of
+  thoughts/actions/observations in the current task.
+- **Long-term memory** = an external store (often a **vector database**) the agent
+  can write to and search later, beyond the context window. (Retrieve-then-use =
+  **RAG**, retrieval-augmented generation.)
+
+For big jobs, agents add **planning**: break a large goal into a checklist of
+sub-tasks, then execute them one by one in the loop.
+
+## You're looking at one right now
+
+**Claude Code is exactly this:** an LLM (Lesson 11) running in a ReAct loop (this
+lesson), with tools like *read a file, run a terminal command, edit code, search
+the web*. That's why it can actually create and edit these lesson files instead of
+just *describing* them. The brain in a jar got hands, a loop, and memory.
+
+## The whole journey, in one breath
+
+```
+Can a machine think?            → test BEHAVIOR, not philosophy        (L1)
+Hand-written rules (Symbolic)   → brittle, can't scale, no perception  (L2–3)
+   ↓ fix: stop writing rules — LEARN from data
+Learning = tune knobs by error                                         (L4)
+The perceptron (a neuron)       → one line only, fails XOR             (L5)
+   ↓ fix: stack layers...
+Backpropagation                 → ...trains the hidden layers          (L6)
+Deep learning                   → depth + DATA + GPUs cracks perception(L7)
+Word embeddings                 → turn meaning into geometry           (L8)
+RNN / LSTM                      → handle order, but bottleneck + slow  (L9)
+   ↓ fix: let every word see every word, in parallel
+Attention / Transformer         → scalable architecture               (L10)
+   ↓ fix: scale it massively
+LLM (predict next token + RLHF) → knowledgeable, helpful... but caged  (L11)
+   ↓ fix: tools + loop + memory
+AGENT                           → it can finally ACT                   (L12)
+```
+
+Every leap was someone staring at an obstacle and asking *"what's the one
+assumption causing this?"* — then dropping it.
+
+## Where it's still going (2026 frontiers)
+
+- **Reliability** — errors compound over a long loop.
+- **Hallucination** — the LLM can still state false things confidently.
+- **Long-horizon planning** — staying coherent over hundreds of steps is hard.
+- **Multi-agent systems** — several specialized agents collaborating.
+
+**Takeaway:** An **agent** is an **LLM placed inside a loop**, given **tools** and
+**memory**. The model can't act — it only *reasons in text and requests actions*;
+a **harness executes** them and **feeds results back**, repeating **Thought →
+Action → Observation** (**ReAct**) until the goal is met. Tools give it hands, the
+loop gives it agency, memory lets it persist and plan. Intelligence comes from the
+model; **agency comes from the loop.** That's how a "brain in a jar" becomes
+something that acts in the world.
+
+---
+
+🎓 **End of the journey** — from "can a machine think?" (1950) to the AI agent you
+talk to today. Re-read any lesson anytime, or ask Claude to go deeper / build a
+tiny working agent hands-on.

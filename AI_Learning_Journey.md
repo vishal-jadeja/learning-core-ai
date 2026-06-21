@@ -24,7 +24,9 @@ current one is understood.
 9. ✅ Handling sequences (RNNs / LSTMs) and their limits
 10. ✅ Attention & the Transformer
 11. ✅ Large Language Models (GPT and friends)
-12. ⏳ From a model to an *agent* (tools, memory, planning, loops)  ← **RESUME HERE NEXT**
+12. ✅ From a model to an *agent* (tools, memory, planning, loops)
+
+🎓 **Journey complete — all 12 lessons done (2026-06-21).**
 
 Legend: ✅ understood · ⏳ in progress · ⬜ not started
 
@@ -245,8 +247,28 @@ Four walls, all rooted in "humans must hand-write every rule":
   look things up, run code, remember past the conversation, or take actions. A
   brilliant **brain in a jar.**
 
-### Lesson 12 — From a Model to an Agent  *(NEXT — the finale)*
+### Lesson 12 — From a Model to an Agent  ✅  *(finale)*
 
-_Resume here. Goal: how the "brain in a jar" LLM becomes an **agent** — tools,
-memory, and a plan→act→observe loop (ReAct) that lets it take real actions._
+- **The insight:** let the LLM's text **output trigger real actions**, and feed
+  the **results back in** as new text — in a loop. Intelligence comes from the
+  model; **agency comes from the loop.** Three ingredients added to the LLM:
+- **1. Tools (hands):** functions the model may use (search, calculator, run
+  code, DB, email, files). Key subtlety — the LLM **can't run anything**; it only
+  *outputs a text request* for an action; a **harness** executes it and pastes
+  the result back as text.
+- **2. The loop — ReAct (Reason + Act):** repeat **Thought → Action →
+  Observation** until done, then give a final answer. (Worked example: "weather
+  in next Olympics host city" → search host city → get weather → answer; the LLM
+  never actually searched — it reasoned and emitted actions, harness did the work.)
+- **3. Memory:** *short-term* = the **context window** (running transcript);
+  *long-term* = external store (often a **vector DB**) it can write/search across
+  sessions (**RAG**). Plus **planning** — decompose a big goal into sub-tasks.
+- **Claude Code is exactly this:** an LLM in a ReAct loop with tools (read file,
+  run command, edit code) — that's why it can *act*, not just describe. (It built
+  these very lesson files.)
+- **Open frontiers (2026):** reliability (compounding errors), hallucination,
+  long-horizon planning, multi-agent systems.
+- **The arc:** behavior-not-philosophy → rules fail → learn from data → neuron →
+  backprop → deep learning → embeddings → sequences → attention/Transformer →
+  scale (LLM) → tools+loop+memory (**agent**). Each leap fixed the prior wall.
 
