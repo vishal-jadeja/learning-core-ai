@@ -23,8 +23,8 @@ current one is understood.
 8. ✅ Representing meaning (word embeddings)
 9. ✅ Handling sequences (RNNs / LSTMs) and their limits
 10. ✅ Attention & the Transformer
-11. ⏳ Large Language Models (GPT and friends)  ← **RESUME HERE NEXT**
-12. ⬜ From a model to an *agent* (tools, memory, planning, loops)
+11. ✅ Large Language Models (GPT and friends)
+12. ⏳ From a model to an *agent* (tools, memory, planning, loops)  ← **RESUME HERE NEXT**
 
 Legend: ✅ understood · ⏳ in progress · ⬜ not started
 
@@ -215,9 +215,38 @@ Four walls, all rooted in "humans must hand-write every rule":
   predictably** → train on enormous text with thousands of GPUs → directly
   enables **LLMs** (next).
 
-### Lesson 11 — Large Language Models (GPT and friends)  *(NEXT — not started)*
+### Lesson 11 — Large Language Models (GPT and friends)  ✅
 
-_Resume here next session. Goal: what happens when you scale the Transformer to
-billions of parameters trained on much of the internet — next-token prediction,
-emergence/scaling, pretraining vs. fine-tuning, RLHF._
+- **The objective is dead simple:** an LLM is a scaled-up Transformer trained to
+  **predict the next token** ("The capital of France is ___" → Paris). That's the
+  whole training task — guess next word, compare, nudge knobs (Lessons 4 & 6).
+- **Why that trick is genius:** (1) **self-supervised** — the text *is* its own
+  answer key (the real next word is the label) → the **entire internet becomes
+  training data**, no human labeling (kills the data bottleneck); (2) predicting
+  text well **forces real understanding** — grammar, facts, reasoning, code,
+  translation are all *necessary* to guess the next word. **Compression forces
+  comprehension.**
+- **Scale:** GPT-1 117M (2018) → GPT-2 1.5B (2019) → GPT-3 175B (2020). Same
+  Transformer, far bigger + far more text.
+- **Scaling laws (2020):** performance improves **smoothly & predictably** with
+  more params + data + compute → scaling became a deliberate strategy.
+- **Emergence:** some abilities **switch on suddenly** past a size threshold —
+  notably **in-context learning** (GPT-3 learns a task from examples *in the
+  prompt*, no weight updates).
+- **The catch:** a raw pretrained LLM is just **autocomplete** — knowledgeable but
+  not helpful (may answer a question with more questions). No instinct to follow
+  instructions or be safe.
+- **Alignment (the fix):** (1) **supervised fine-tuning / instruction tuning** —
+  human-written (instruction → ideal response) examples teach the assistant
+  format; (2) **RLHF** — humans rank outputs → train a **reward model** → tune the
+  LLM to maximize it → helpful/honest/harmless. GPT-3 → **InstructGPT** →
+  **ChatGPT** (late 2022, AI goes mainstream).
+- **The cage (sets up agents):** still fundamentally **text in → text out** — can't
+  look things up, run code, remember past the conversation, or take actions. A
+  brilliant **brain in a jar.**
+
+### Lesson 12 — From a Model to an Agent  *(NEXT — the finale)*
+
+_Resume here. Goal: how the "brain in a jar" LLM becomes an **agent** — tools,
+memory, and a plan→act→observe loop (ReAct) that lets it take real actions._
 

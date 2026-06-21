@@ -8,10 +8,10 @@ lesson (not just the short summaries in `AI_Learning_Journey.md`).
 only after you say **"understood"**. Progress is logged in
 `AI_Learning_Journey.md`; the deep notes live here.
 
-**Status:** Lessons 1–10 complete. **Resume at Lesson 11 — Large Language Models.**
+**Status:** Lessons 1–11 complete. **Resume at Lesson 12 — From a Model to an Agent (finale).**
 
-To continue on another device: pull this repo, read up through Lesson 10, then
-tell Claude *"let's continue the AI lessons — start Lesson 11."*
+To continue on another device: pull this repo, read up through Lesson 11, then
+tell Claude *"let's continue the AI lessons — start Lesson 12."*
 
 ---
 
@@ -27,8 +27,8 @@ tell Claude *"let's continue the AI lessons — start Lesson 11."*
 8. ✅ Representing meaning (word embeddings)
 9. ✅ Handling sequences (RNNs / LSTMs) and their limits
 10. ✅ Attention & the Transformer
-11. ⬜ **Large Language Models (GPT and friends)  ← RESUME HERE**
-12. ⬜ From a model to an *agent* (tools, memory, planning, loops)
+11. ✅ Large Language Models (GPT and friends)
+12. ⬜ **From a model to an *agent* (tools, memory, planning, loops)  ← RESUME HERE**
 
 ---
 
@@ -1014,12 +1014,138 @@ exactly what makes modern LLMs possible.
 
 ---
 
-# Lesson 11 — Large Language Models (GPT and friends)  *(NEXT — not started)*
+# Lesson 11 — Large Language Models (GPT and friends)
 
-Resume here. Goal: what happens when you scale the Transformer to billions of
-parameters trained on much of the internet. Covers **next-token prediction** as
-the training objective, **pretraining vs. fine-tuning**, **scaling laws &
-emergence**, and **RLHF** (turning a raw text-predictor into a helpful assistant)
-— the bridge toward agents.
+Lesson 10 teased: a Transformer keeps getting smarter as it grows — so what if
+you make it enormous and feed it the whole internet? That's the **LLM.** The
+surprise is in *how* it's trained.
 
-_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 11."_
+## The training task is absurdly simple: predict the next word
+
+An LLM is trained to do **one** thing:
+
+> Given some text, **predict the next word** (technically the next *token* — a
+> word or word-piece).
+
+```
+"The capital of France is ___"   → predict:  Paris
+"To be or not to ___"            → predict:  be
+"import numpy as ___"            → predict:  np
+```
+
+Take a sentence from the internet, hide the next word, make the model guess,
+compare to the real word, nudge the knobs (Lesson 4's loop, Lesson 6's backprop).
+Repeat across *hundreds of billions of words.*
+
+## Why this one trick is secretly genius
+
+**1. The data labels itself (self-supervised).** For next-word prediction, **the
+text is its own answer key** — the "correct label" is just the word that actually
+came next. So *all the raw text on the internet* becomes training data with no
+human labeling. That's how you get enough data to train billions of knobs.
+
+**2. To predict well, it's forced to understand.**
+
+```
+"The murderer, revealed in the final chapter, turned out to be the ___"
+→ must track the whole plot.
+"2 + 2 = ___"                        → must do arithmetic.
+"The French word for 'cat' is ___"   → must know translation.
+"def add(a, b): return ___"          → must understand code.
+```
+
+Predicting the next word across all human text secretly requires grammar, facts,
+reasoning, translation, coding. **Compression forces comprehension** — the model
+learns these because they're *necessary to predict text well.*
+
+## Scale: the numbers that made it work
+
+```
+GPT-1 (2018):    117 million parameters
+GPT-2 (2019):    1.5 billion       ("too dangerous to release," they said)
+GPT-3 (2020):    175 billion       ← the jaw-dropper
+```
+
+Same Transformer from Lesson 10 — just vastly bigger, on vastly more text.
+
+**Scaling laws (2020):** performance improves **smoothly and predictably** as you
+add parameters + data + compute. You could *predict* that a 10× bigger model would
+be a certain amount better → spending millions on a giant run became a calculated
+bet, not a gamble.
+
+## Emergence: new abilities appear out of nowhere
+
+Some abilities **switch on suddenly** past a size threshold (small models ~0%,
+then it appears). The key example — **in-context learning**: GPT-3 learns a brand
+new task *from examples in the prompt*, with **no retraining**:
+
+```
+Prompt:
+  sea otter → nutria de mar
+  cheese → queso
+  car → ___
+Model: coche
+```
+
+No weight updated. It "figured out the task" from the prompt. These surprises are
+**emergent abilities.**
+
+## The catch: a raw LLM is not an assistant
+
+A freshly pretrained LLM is pure **autocomplete**:
+
+```
+You:  "What is the capital of France?"
+Raw LLM:  "What is the capital of Germany? What is the capital of Italy?"
+```
+
+On the internet, questions are often followed by *more questions*. It's doing its
+job — predicting plausible continuation — but has **no instinct to be helpful,
+follow instructions, or stay safe.**
+
+## The fix: alignment (turning the predictor into ChatGPT)
+
+**1. Supervised fine-tuning (instruction tuning).** Thousands of human-written
+`(instruction → ideal response)` examples teach it the *format* of a helpful
+assistant that answers rather than rambles.
+
+**2. RLHF — Reinforcement Learning from Human Feedback.**
+
+```
+a) The model generates several answers to a prompt.
+b) Humans RANK them, best to worst.
+c) Train a "reward model" to predict those human preferences.
+d) Tune the LLM to maximize that reward → helpful, honest, harmless.
+```
+
+Applying this to GPT-3 produced **InstructGPT**; packaged as chat in **late
+2022**, it became **ChatGPT** — AI mainstream overnight.
+
+## Where this leaves us
+
+We now have the thing you talk to: a massive Transformer, pretrained by next-token
+prediction, then aligned via fine-tuning + RLHF. **But notice its cage** — still
+fundamentally **text in → text out.** It can't look things up (frozen at its
+cutoff), do what it can't compute in one pass (real math, running code), remember
+you after the chat, or *take actions.* A brilliant **brain in a jar** — which is
+exactly what agents fix.
+
+**Takeaway:** An **LLM** is the Transformer scaled massively and trained to
+**predict the next token** — which is **self-supervised** (text is its own label →
+the whole internet becomes data) and **forces real understanding** (can't predict
+text well without learning grammar, facts, reasoning, code). **Scaling laws** made
+bigger-predictably-better a strategy; scale unlocked **emergent abilities** like
+in-context learning. A raw LLM is just **autocomplete**, so **fine-tuning + RLHF**
+align it into an assistant (GPT-3 → InstructGPT → **ChatGPT**). It's a powerful
+**brain in a jar** — still text-in/text-out, which agents fix next.
+
+---
+
+# Lesson 12 — From a Model to an Agent  *(NEXT — the finale)*
+
+Resume here. Goal: how the "brain in a jar" LLM becomes an **agent** — giving it
+**tools** (search, code, APIs), **memory** (beyond the context window), and a
+**plan → act → observe loop** (the ReAct pattern) so it can take real,
+multi-step actions in the world. This is the destination of the whole journey.
+
+_When continuing, tell Claude: "let's continue the AI lessons — start Lesson 12."_
