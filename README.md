@@ -21,7 +21,6 @@ move forward once I can explain the current step to a beginner.
 | **[AI_Learning_Journey.md](./AI_Learning_Journey.md)** | The main lesson log — every concept learned so far, in order, distilled to the *why* behind it. **Start here.** |
 | **[AI_Lessons_Full_Transcript.md](./AI_Lessons_Full_Transcript.md)** | The full, unabridged lesson conversations (the long-form version of the log). |
 | **[AI_RESEARCH_ROADMAP.md](./AI_RESEARCH_ROADMAP.md)** | **What's next** — the core concepts left to learn to understand modern AI end-to-end. |
-| **[AI_RESEARCH_PREP.md](./AI_RESEARCH_PREP.md)** | The hands-on track — a week-by-week plan to build a GPT from scratch and reproduce a paper. |
 
 **The method, every lesson:** what did the previous step leave broken → what's the
 idea that fixes it → why does it matter. Understand, then advance.
@@ -72,11 +71,6 @@ in the [roadmap](./AI_RESEARCH_ROADMAP.md):
 - **C — Measuring & systems:** evaluation (the underrated one) · deepening RAG &
   agents by *building* them, not just describing.
 - **D — Beyond text:** multimodal (vision+language) · diffusion models.
-
-Then the **hands-on spine** — build a GPT from scratch and reproduce a paper
-([AI_RESEARCH_PREP.md](./AI_RESEARCH_PREP.md)) — and the specialization branches
-(interpretability, training systems, new architectures, safety) once the foundation
-is wide.
 
 ---
 
