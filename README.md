@@ -20,7 +20,8 @@ move forward once I can explain the current step to a beginner.
 |------|------------|
 | **[AI_Learning_Journey.md](./AI_Learning_Journey.md)** | The main lesson log — every concept learned so far, in order, distilled to the *why* behind it. **Start here.** |
 | **[AI_Lessons_Full_Transcript.md](./AI_Lessons_Full_Transcript.md)** | The full, unabridged lesson conversations (the long-form version of the log). |
-| **[AI_RESEARCH_ROADMAP.md](./AI_RESEARCH_ROADMAP.md)** | **What's next** — the core concepts left to learn to understand modern AI end-to-end. |
+| **[Ai_research_concepts.md](./Ai_research_concepts.md)** | **What's next** — the core concepts left to learn to understand modern AI end-to-end. |
+| **[AI_RESEARCH_PREP.md](./AI_RESEARCH_PREP.md)** | **The hands-on build** — 4-phase tracker: math refresh → ML core → build a GPT from scratch → reproduce a paper. |
 
 **The method, every lesson:** what did the previous step leave broken → what's the
 idea that fixes it → why does it matter. Understand, then advance.
@@ -52,9 +53,9 @@ neuron → backprop → deep learning → embeddings → sequences → attention
 → scale (LLM) → tools+loop+memory (**agent**). Each leap fixed the prior wall.
 
 **Where I am:** concept foundation done. Next = the gaps the history skipped
-(tokenization, sampling, evals, modern alignment, multimodal, diffusion) plus the
-hands-on build. Full forward plan in
-**[AI_RESEARCH_ROADMAP.md](./AI_RESEARCH_ROADMAP.md)**.
+(tokenization, sampling, evals, modern alignment, MoE, multimodal, diffusion) plus
+the hands-on build. Concept plan in **[Ai_research_concepts.md](./Ai_research_concepts.md)**;
+build plan in **[AI_RESEARCH_PREP.md](./AI_RESEARCH_PREP.md)**.
 
 ---
 
@@ -62,14 +63,15 @@ hands-on build. Full forward plan in
 
 The history gave the *why*; it skipped or skimmed several pieces every modern AI
 practitioner still needs. The remaining core foundation — grouped here, full detail
-in the [roadmap](./AI_RESEARCH_ROADMAP.md):
+in the [concepts roadmap](./Ai_research_concepts.md):
 
 - **A — Gaps inside the LLM stack:** tokenization (BPE) · sampling & decoding ·
-  modern positional encoding (RoPE) & long context · the Transformer block internals.
+  modern positional encoding (RoPE) & long context · the Transformer block internals ·
+  Mixture-of-Experts (MoE) · KV cache & inference cost.
 - **B — Modern alignment & efficiency:** DPO & RLVR (beyond RLHF) · reasoning /
   test-time-compute models · LoRA & quantization · prompting & chain-of-thought.
 - **C — Measuring & systems:** evaluation (the underrated one) · deepening RAG &
-  agents by *building* them, not just describing.
+  agents by *building* them · Model Context Protocol (MCP) & tool standards.
 - **D — Beyond text:** multimodal (vision+language) · diffusion models.
 
 ---

@@ -54,6 +54,24 @@ several real, load-bearing pieces. Close them.*
 - **Why it matters:** these are *why* deep Transformers train at all (ties back to
   vanishing gradients, Lesson 7). Needed before building one from scratch.
 
+### A5. Mixture-of-Experts (MoE) ⬜
+- **Problem:** scaling laws (Lesson 11) say bigger = better, but every token paying
+  for *every* parameter gets ruinously expensive.
+- **The idea:** replace the dense MLP sublayer with many **expert** MLPs + a
+  **router** that sends each token to only a few → huge total parameter count,
+  small *active* compute per token.
+- **Why it matters:** how frontier models (GPT-4, DeepSeek, Mixtral, Llama-4) scale
+  params without scaling cost-per-token. Now the default, not the exception.
+
+### A6. KV cache & inference cost ⬜
+- **Problem:** generating token N re-attends over all previous tokens — recomputing
+  their Keys/Values every step is wasteful.
+- **The idea:** cache each token's **K** and **V** once, reuse them for every later
+  token → the reason generation is fast after the first token.
+- **Why it matters:** explains why prompt (prefill) and generation (decode) cost
+  differently, why long context eats memory, and prompt-caching pricing. Pairs with
+  A2 (sampling).
+
 ---
 
 ## Part B — Modern alignment & efficiency
@@ -104,6 +122,14 @@ deepen the systems by* building *them.*
   already. The gap is *depth through implementation*, not theory.
 - **Do:** build a small agent loop (ReAct) and a RAG pipeline from first principles,
   no framework — close the loop on *why* each part works.
+
+### C3. Model Context Protocol (MCP) & tool standards ⬜
+- **Problem:** Lesson 12's "harness runs the tool" was hand-wired per tool. How do
+  tools get exposed to a model in a *standard* way across apps?
+- **The idea:** **MCP** — an open protocol for exposing tools, resources, and prompts
+  to any LLM host; the model discovers and calls them uniformly.
+- **Why it matters:** the 2025–26 agent-tooling standard, and exactly what Claude
+  Code (and this session) runs on. Directly useful for a builder.
 
 ---
 
