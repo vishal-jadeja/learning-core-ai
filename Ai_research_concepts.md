@@ -17,6 +17,11 @@ Deep research tracks (interpretability, training infra, novel architectures) com
 unsolved, what's the idea that fixes it, why does it matter. Understand, then
 advance.
 
+> **Execution:** the weekend-by-weekend schedule, artifacts and gates for closing
+> these 15 items live in **[PHASE_2_CONCEPTS.md](./PHASE_2_CONCEPTS.md)** (visual
+> version: [phase-2.html](./phase-2.html)). This file stays the concept index —
+> definitions and status glyphs only.
+
 Legend: ✅ understood (in the journey) · ⏳ in progress · ⬜ not started
 
 ---
