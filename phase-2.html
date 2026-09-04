@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 2 — The Concept Gaps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:#f3eee2;color:#37322b;font-family:'Newsreader',Georgia,serif;font-size:20px;line-height:1.78;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  h1,h2,h3,h4{font-family:'Newsreader',Georgia,serif;color:#1f1b15;margin:0;font-weight:600;line-height:1.12;}
+  p{margin:0 0 1.15em;}
+  a{color:inherit;}
+  code{font-family:'JetBrains Mono',monospace;font-size:.84em;background:#e9e1d1;padding:.08em .35em;border-radius:4px;color:#5a4a36;}
+  ::selection{background:oklch(0.6 0.13 45 / .22);}
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* progress bar */
+  #pbar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,oklch(0.6 0.13 45),oklch(0.62 0.13 300));z-index:90;}
+
+  /* rail nav */
+  .railnav{position:fixed;left:26px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:11px;z-index:80;}
+  .railnav a{display:flex;align-items:center;gap:9px;text-decoration:none;}
+  .railnav .bar{width:15px;height:2px;background:#cabda6;border-radius:2px;transition:all .18s ease;}
+  .railnav a.on .bar{width:30px;height:3px;background:var(--rc);}
+  .railnav .lbl{display:none;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--rc);white-space:nowrap;}
+  .railnav a.on .lbl{display:block;}
+  @media(max-width:1140px){.railnav{display:none!important;}}
+  @media(max-width:560px){body{font-size:18px;}}
+
+  main{max-width:716px;margin:0 auto;padding:0 28px 120px;}
+
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:oklch(0.6 0.13 45);font-weight:500;}
+  .deck{font-style:italic;color:#6a6052;}
+  .meta{font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.14em;color:#8a8071;text-transform:uppercase;}
+
+  .card{background:#fbf8f1;border:1px solid #e7ddcb;border-left:4px solid var(--a,#b56a4a);border-radius:0 10px 10px 0;padding:20px 24px;margin:0 0 18px;}
+  .card .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--a,#b56a4a);font-weight:700;margin:0 0 6px;}
+  .card p{margin:0;font-size:18.5px;line-height:1.62;}
+
+  .dark{background:#1f1b15;border-radius:16px;padding:26px 26px 30px;color:#e8e1d3;margin:34px 0;}
+  .dark .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#9a9082;margin:0 0 14px;font-weight:500;}
+  .dark p{color:#cdc4b4;}
+  .chip{background:#2a251d;border:1px solid #322c22;border-radius:10px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#e8e1d3;}
+
+  figure.panel{background:#fbf8f1;border:1px solid #e7ddcb;border-radius:12px;padding:26px 22px 18px;margin:26px 0;}
+
+  /* weekend sections */
+  section.wknd{scroll-margin-top:24px;padding-top:64px;}
+  .wknd-head{display:flex;align-items:baseline;gap:18px;}
+  .wknd-num{font-family:'JetBrains Mono',monospace;font-size:54px;font-weight:700;color:var(--a);line-height:1;}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8a8071;line-height:1.7;}
+  section.wknd h2{font-size:clamp(26px,4vw,34px);font-weight:500;margin:10px 0 4px;}
+  .wknd-deck{font-style:italic;font-size:19px;color:#6a6052;margin:0 0 14px;}
+  .row{display:flex;gap:10px;align-items:baseline;margin:0 0 8px;font-size:18px;line-height:1.6;}
+  .row .tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--a);font-weight:700;min-width:72px;flex:none;}
+  .done-row{display:flex;align-items:center;gap:10px;margin:14px 0 0;font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.1em;color:#8a8071;}
+  .done-row input{width:17px;height:17px;accent-color:#4a8f6a;cursor:pointer;}
+  section.wknd.shipped .wknd-num::after{content:" ✓";font-size:26px;color:#4a8f6a;}
+
+  .takeaway{border-radius:14px;padding:24px 28px;margin:22px 0;}
+  .takeaway .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin:0 0 8px;}
+  .takeaway p{margin:0;font-size:19px;}
+
+  .dots{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 18px;}
+  .dot{width:15px;height:15px;border-radius:50%;border:2.5px solid #4a4438;transition:all .2s;}
+  .dot.on{background:#4a8f6a;border-color:#4a8f6a;}
+
+  .toc{margin:8px 0 0;}
+  .toc a{display:flex;gap:14px;align-items:baseline;padding:9px 2px;border-bottom:1px solid #e4dac8;text-decoration:none;font-size:17.5px;}
+  .toc a:hover{background:#f7f0e6;}
+  .toc .n{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--h);font-weight:700;min-width:26px;}
+  .toc .t{color:#1f1b15;}
+  .toc .r{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;color:#a0937e;text-transform:uppercase;flex:none;}
+
+  hr.rule{border:0;border-top:1px solid #ddd3c1;margin:64px 0 0;}
+  footer{text-align:center;padding:48px 0 0;}
+</style>
+</head>
+<body>
+<div id="pbar"></div>
+<nav class="railnav" id="rail" aria-label="Weekend navigation"></nav>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <header style="padding:110px 0 20px;">
+    <div class="eyebrow">Phase 2 · The Concept Gaps</div>
+    <h1 style="font-size:clamp(46px,8.5vw,86px);font-weight:500;letter-spacing:-0.025em;line-height:1.0;margin:18px 0 22px;">Close the gaps,<br>then build.</h1>
+    <p class="deck" style="font-size:clamp(21px,3vw,27px);line-height:1.4;margin:0 0 26px;">The history gave the <em>why</em>. These are the fifteen load-bearing pieces it skipped — closed one weekend at a time, each with something that runs.</p>
+    <div class="meta">15 concepts &nbsp;•&nbsp; 16 weekends &nbsp;•&nbsp; Sep → Dec 2026</div>
+  </header>
+
+  <!-- ============ PROGRESS PANEL ============ -->
+  <div class="dark">
+    <div class="k">Progress · tick a weekend below when its gate passes</div>
+    <div class="dots" id="dots"></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div class="chip"><span id="wdone">0</span> / 16 WEEKENDS SHIPPED</div>
+      <div class="chip"><span id="cdone">0</span> / 15 CONCEPTS CLOSED</div>
+    </div>
+    <p style="margin:18px 0 0;font-size:16.5px;line-height:1.6;">The honest math: weekends only ≈ 9 hrs/wk. Concepts finish <span class="mono" style="color:#e8e1d3;">~Dec 20, 2026</span>. The GPT build that follows (<span class="mono" style="font-size:.85em;">AI_RESEARCH_PREP.md</span>, ~280 hrs) spans <span class="mono" style="color:#e8e1d3;">~30 weekends → mid-2027</span>. Applications open during the build, not after it.</p>
+  </div>
+
+  <!-- ============ WHERE PHASE 1 ENDED ============ -->
+  <section style="padding-top:30px;">
+    <div class="eyebrow" style="color:oklch(0.55 0.12 120);">Where Phase 1 ended</div>
+    <h2 style="font-size:clamp(30px,4.6vw,42px);font-weight:500;margin:12px 0 14px;">Twelve lessons, one arc — complete.</h2>
+    <p>Turing → symbolic AI → its collapse → learning from data → perceptron → backprop → deep learning → embeddings → sequences → attention → LLMs → agents. All twelve done 2026-06-21, written up in <a href="./index.html">The Journey to AI Agents</a>. Every leap fixed the wall the last idea hit.</p>
+    <p style="margin-bottom:0;">Then the roadmap for what comes next sat untouched for eleven weeks. That stall is the first thing this phase fixes.</p>
+  </section>
+
+  <!-- ============ WHY IT STALLED ============ -->
+  <section style="padding-top:56px;">
+    <div class="eyebrow" style="color:oklch(0.55 0.15 18);">Why the last plan stalled</div>
+    <h2 style="font-size:clamp(30px,4.6vw,42px);font-weight:500;margin:12px 0 18px;">Plan shape, not motivation.</h2>
+
+    <div class="card" style="--a:oklch(0.55 0.15 18);">
+      <div class="k">Defect 1 — the budget was fiction</div>
+      <p>4 hrs/day, every day, for a working full-stack engineer. One missed day made the schedule wrong — and a wrong schedule gets abandoned, not adjusted. <strong>Fix:</strong> weekend-sized units at the real budget, ~9 hrs per weekend.</p>
+    </div>
+    <div class="card" style="--a:oklch(0.58 0.13 40);">
+      <div class="k">Defect 2 — items were topics, not sessions</div>
+      <p>"A3. Positional encoding ⬜" has no start, no end, no artifact — no way to be <em>wrong</em>. "Understood" is unfalsifiable, so nothing ever got ticked. <strong>Fix:</strong> every weekend names an artifact and a four-part gate.</p>
+    </div>
+    <div class="card" style="--a:oklch(0.52 0.12 245);">
+      <div class="k">Defect 3 — no forcing function</div>
+      <p>Phase 1 worked because every lesson shipped a committed writeup — git history <em>was</em> the progress. The concept roadmap dropped that. <strong>Fix:</strong> commit every Sunday; a missed weekend gets logged, never hidden.</p>
+    </div>
+  </section>
+
+  <!-- ============ SESSION SHAPE ============ -->
+  <section style="padding-top:56px;">
+    <div class="eyebrow" style="color:oklch(0.52 0.13 285);">The unit of work</div>
+    <h2 style="font-size:clamp(30px,4.6vw,42px);font-weight:500;margin:12px 0 14px;">One weekend, one concept, one artifact.</h2>
+    <figure class="panel" style="margin-top:18px;">
+      <pre class="mono" style="margin:0;font-size:13.5px;line-height:1.85;color:#4a443b;overflow-x:auto;">SATURDAY  ~5h   learn + implement
+  1h   read the concept + primary resource
+  3h   build the smallest thing that proves it
+  1h   break it on purpose; find the edge
+
+SUNDAY    ~4h   consolidate + ship
+  2h   writeup — what broke → the idea → why it matters
+  1h   beginner test: explain it plainly, no jargon
+  1h   commit · tick the box · update the log</pre>
+    </figure>
+    <div class="takeaway" style="background:oklch(0.55 0.12 120 / .1);">
+      <div class="k" style="color:oklch(0.5 0.12 120);">The gate — definition of done</div>
+      <p><strong>It runs</strong> · <strong>you broke it</strong> (one failure the theory predicts) · <strong>beginner test</strong> (plain-language paragraph) · <strong>it's committed</strong>. All four, or the box stays empty.</p>
+    </div>
+  </section>
+
+  <!-- ============ TOC ============ -->
+  <section style="padding-top:56px;">
+    <div class="eyebrow">The sixteen weekends</div>
+    <div class="toc" id="toc"></div>
+  </section>
+
+  <!-- ============ WEEKENDS (generated) ============ -->
+  <div id="wknds"></div>
+
+  <hr class="rule">
+
+  <!-- ============ AFTER ============ -->
+  <section style="padding-top:56px;">
+    <div class="eyebrow" style="color:oklch(0.58 0.13 50);">After weekend 16</div>
+    <h2 style="font-size:clamp(30px,4.6vw,42px);font-weight:500;margin:12px 0 14px;">The reading ends. The build begins.</h2>
+    <p>With the fifteen gaps closed, <code>AI_RESEARCH_PREP.md</code> takes over: math refresh → micrograd → a GPT built from scratch, trained, benchmarked → a paper reproduced on top of it. Resized for weekends, that's ~30 more of them — into mid-2027 — with fellowship applications going out <em>during</em> the build, not after.</p>
+    <p style="margin-bottom:0;">Then, and only then: pick one branch — interpretability, training &amp; systems, new architectures, or safety research.</p>
+  </section>
+
+  <footer>
+    <div style="font-size:34px;">🧭</div>
+    <p class="deck" style="font-size:22px;margin:10px 0 6px;">Understand, then advance — now with receipts.</p>
+    <div class="mono" style="font-size:12px;color:#a89c87;">tracker · PHASE_2_CONCEPTS.md &nbsp;·&nbsp; concepts · Ai_research_concepts.md &nbsp;·&nbsp; phase 1 · <a href="./index.html" style="color:#a89c87;">index.html</a></div>
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  // 16 weekends. hue continues index.html's OKLCH rotation (L12 closed at ~50).
+  var W = [
+    {id:"A1", t:"Tokenization (BPE)", d:"Models don't eat words — they eat tokens. What is one?", a:"Train BPE on a text file; encode/decode roundtrip; show why letter-counting 'strawberry' fails.", w:"Layer directly under Lesson 8 — the base of everything.", dates:"Sep 5–6"},
+    {id:"A2", t:"Sampling & decoding", d:"The model gives a probability. How do you actually pick a token?", a:"Greedy / temperature / top-k / top-p over toy logits; sweep temperature, plot the shift.", w:"Needs only a probability vector — no model yet.", dates:"Sep 12–13"},
+    {id:"A4", t:"The Transformer block, fully", d:"Residuals, LayerNorm, the MLP — why deep Transformers train at all.", a:"One block in NumPy; ablate each part and watch training break.", w:"Moved up: RoPE, KV cache and MoE all modify this block — it must exist first.", dates:"Sep 19–20"},
+    {id:"A3", t:"RoPE & long context", d:"How context windows stretch to a million tokens, and what breaks at length.", a:"Implement rotary embeddings; plot rotation vs position; compare to 2017 sinusoids.", w:"Modifies the weekend-3 block.", dates:"Sep 26–27"},
+    {id:"A6", t:"KV cache & inference cost", d:"Why generation is fast after the first token — and why long context eats memory.", a:"Naive vs cached generation, timed; plot cost vs sequence length.", w:"Explains prefill/decode pricing from the inside.", dates:"Oct 3–4"},
+    {id:"A5", t:"Mixture-of-Experts", d:"Huge parameter counts, small active compute — how frontier models scale.", a:"Swap the MLP for N experts + a router; log which expert each token visits.", w:"Hardest of Part A — lands after the block is fluent. 🔒 checkpoint follows.", dates:"Oct 10–11", chk:true},
+    {id:"C1", t:"Evaluation", d:"Research is measurement. You can't claim progress you can't measure.", a:"Tiny eval harness: held-out perplexity + an LLM-as-judge rubric on 10 samples.", w:"Pulled forward — every later weekend uses this harness.", dates:"Oct 17–18"},
+    {id:"B4", t:"Prompting & chain-of-thought", d:"Why 'think step by step' works with no weight change.", a:"Same task few-shot vs zero-shot vs CoT, scored with the weekend-7 harness.", w:"Light weekend by design; first payoff from C1.", dates:"Oct 24–25"},
+    {id:"B1", t:"DPO & RLVR", d:"Alignment after RLHF: skip the reward model, or make rewards checkable.", a:"Read-only weekend: the DPO loss derived by hand, on paper.", w:"Conceptual — no infra for real RL at this scale.", dates:"Oct 31–Nov 1"},
+    {id:"B2", t:"Reasoning & test-time compute", d:"Spend compute while answering — the 2025–26 frontier.", a:"Measure a thinking vs non-thinking model on the weekend-7 harness.", w:"Second payoff from C1.", dates:"Nov 7–8"},
+    {id:"B3", t:"LoRA & quantization", d:"Adapt and run huge models cheaply — ~1% of weights, 4-bit inference.", a:"LoRA adapter on a toy linear layer from scratch; count trainable params.", w:"Implementable at small scale.", dates:"Nov 14–15"},
+    {id:"C3", t:"MCP & tool standards", d:"How tools reach a model in a standard way — the protocol this very page's author runs on.", a:"A minimal MCP server exposing one tool, connected to a real host.", w:"Highest direct utility for a working engineer.", dates:"Nov 21–22"},
+    {id:"C2", t:"RAG from scratch (1 of 2)", d:"Shipped in production already — now rebuild it with no framework, to know why it works.", a:"Chunk → embed → retrieve → generate, every step by hand.", w:"The one 🔁 item; split across two weekends.", dates:"Nov 28–29"},
+    {id:"C2b", t:"ReAct agent loop (2 of 2)", d:"Lesson 12, closed by building it.", a:"Thought / Action / Observation loop by hand, calling the weekend-12 tool.", w:"Model + tools + loop + memory — the finale made real.", dates:"Dec 5–6"},
+    {id:"D1", t:"Multimodal (CLIP / ViT)", d:"How models see: images as patches-as-tokens in a shared embedding space.", a:"Patchify an image; run CLIP; probe text–image similarity.", w:"Breadth — the other half of modern assistants.", dates:"Dec 12–13"},
+    {id:"D2", t:"Diffusion", d:"Generate by reversing noise — the other giant branch of generative AI.", a:"Forward noising + reverse denoising on 2D toy points; animate it.", w:"Different math from Transformers; rounds out the picture. 🔒 phase gate.", dates:"Dec 19–20", chk:true}
+  ];
+  var hue = function(i){ return (50 + i*21) % 360; };
+
+  // C2 spans weekends 13+14 (indices 12,13) -> 15 concepts across 16 weekends
+  function conceptsClosed(done){
+    var n = 0;
+    for (var i=0;i<W.length;i++){
+      if (i === 12 || i === 13) continue;
+      if (done[i]) n++;
+    }
+    if (done[12] && done[13]) n++; // C2 closes only when both halves ship
+    return n;
+  }
+
+  var store = {
+    get: function(i){ try { return localStorage.getItem("phase2-w"+(i+1)) === "1"; } catch(e){ return false; } },
+    set: function(i,v){ try { localStorage.setItem("phase2-w"+(i+1), v ? "1" : "0"); } catch(e){} }
+  };
+
+  var wknds = document.getElementById("wknds"),
+      toc = document.getElementById("toc"),
+      rail = document.getElementById("rail"),
+      dotsEl = document.getElementById("dots");
+
+  var done = [], secs = [], railLinks = [], dots = [];
+
+  for (var i=0;i<W.length;i++){
+    var h = hue(i), c = W[i], n = i+1, nn = (n<10?"0":"")+n;
+    done.push(store.get(i));
+
+    // section
+    var s = document.createElement("section");
+    s.className = "wknd"; s.id = "w"+n;
+    s.style.setProperty("--a","oklch(0.56 0.13 "+h+")");
+    s.innerHTML =
+      '<div class="wknd-head"><div class="wknd-num">'+nn+'</div>' +
+      '<div class="kicker">Weekend · '+c.dates+', 2026<br>'+c.id.replace("C2b","C2")+'</div></div>' +
+      '<h2>'+c.t+'</h2>' +
+      '<p class="wknd-deck">'+c.d+'</p>' +
+      '<div class="row"><span class="tag">Artifact</span><span>'+c.a+'</span></div>' +
+      '<div class="row"><span class="tag">Why here</span><span>'+c.w+'</span></div>' +
+      '<label class="done-row"><input type="checkbox" data-i="'+i+'"> GATE PASSED — SHIPPED &amp; COMMITTED</label>' +
+      (c.chk ? '<div class="takeaway" style="background:oklch(0.56 0.13 '+h+' / .1);margin-top:18px;"><div class="k" style="color:oklch(0.5 0.12 '+h+');">🔒 Checkpoint</div><p>' +
+        (c.id==="A5"
+          ? 'Part A done. Rebuild the Transformer block <strong>from memory, no reference</strong>. If it fails, repeat weekend 3 before moving on — the entire build phase rests on it.'
+          : 'Phase 2 done. Update every glyph in <code>Ai_research_concepts.md</code>, then open <code>AI_RESEARCH_PREP.md</code> — the reading is over.') +
+        '</p></div>' : '');
+    wknds.appendChild(s);
+    secs.push(s);
+
+    // toc row
+    var a = document.createElement("a");
+    a.href = "#w"+n;
+    a.style.setProperty("--h","oklch(0.5 0.12 "+h+")");
+    a.innerHTML = '<span class="n">'+nn+'</span><span class="t">'+c.t+'</span><span class="r">'+c.dates+'</span>';
+    toc.appendChild(a);
+
+    // rail
+    var r = document.createElement("a");
+    r.href = "#w"+n;
+    r.style.setProperty("--rc","oklch(0.58 0.13 "+h+")");
+    r.innerHTML = '<span class="bar"></span><span class="lbl">'+nn+' · '+c.t+'</span>';
+    rail.appendChild(r);
+    railLinks.push(r);
+
+    // dot
+    var d = document.createElement("div");
+    d.className = "dot";
+    dotsEl.appendChild(d);
+    dots.push(d);
+  }
+
+  function paint(){
+    var w = 0;
+    for (var i=0;i<W.length;i++){
+      dots[i].classList.toggle("on", !!done[i]);
+      secs[i].classList.toggle("shipped", !!done[i]);
+      secs[i].querySelector("input").checked = !!done[i];
+      if (done[i]) w++;
+    }
+    document.getElementById("wdone").textContent = w;
+    document.getElementById("cdone").textContent = conceptsClosed(done);
+  }
+  wknds.addEventListener("change", function(e){
+    var i = +e.target.getAttribute("data-i");
+    done[i] = e.target.checked;
+    store.set(i, done[i]);
+    paint();
+  });
+  paint();
+
+  // scroll progress + active rail
+  var ticking = false;
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      ticking = false;
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - window.innerHeight;
+      document.getElementById("pbar").style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + "%";
+      var active = -1;
+      for (var i=0;i<secs.length;i++){
+        if (secs[i].getBoundingClientRect().top <= 140) active = i;
+      }
+      for (var j=0;j<railLinks.length;j++) railLinks[j].classList.toggle("on", j === active);
+    });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+})();
+</script>
+</body>
+</html>
