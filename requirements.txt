@@ -1,0 +1,4 @@
+# Phase 2 — concept experiments
+# (torch arrives with weekend 11+; earlier weekends are NumPy on purpose)
+numpy>=1.26
+matplotlib>=3.8

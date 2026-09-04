@@ -1,0 +1,15 @@
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# model artifacts & data
+*.pt
+*.ckpt
+data/
+
+# os / editor
+.DS_Store
+Thumbs.db
