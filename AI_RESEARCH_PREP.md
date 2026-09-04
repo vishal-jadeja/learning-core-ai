@@ -1,6 +1,11 @@
 # AI Research Engineer — Prep Tracker
 
-**Goal:** AI Research Engineer fellowship/internship · **Budget:** 4 hrs/day (~28 hrs/wk) · **Target:** apply by Week 9–10
+**Goal:** AI Research Engineer fellowship/internship · **Budget:** weekends only (~8–10 hrs/wk — revised 2026-09-04; the original 4 hrs/day was fiction) · **Target:** applications go out **during** the build (Week 9's own note: apps open 6–9 months early), not at a fixed week
+
+> **Sequencing (2026-09-04):** this tracker starts **after** Phase 2 — the 15 concept
+> gaps in [PHASE_2_CONCEPTS.md](./PHASE_2_CONCEPTS.md) (Sep–Dec 2026). At weekend
+> pace the "weeks" below are ~2–3 calendar weeks each; the build spans into mid-2027.
+> Phase content unchanged.
 
 **Spine project:** Build a small GPT from scratch → train → benchmark. Public repo, **commit daily**. Phase 4 extends it into a paper reproduction (your portfolio centerpiece).
 
