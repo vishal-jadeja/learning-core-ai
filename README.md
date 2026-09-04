@@ -20,8 +20,10 @@ move forward once I can explain the current step to a beginner.
 |------|------------|
 | **[AI_Learning_Journey.md](./AI_Learning_Journey.md)** | The main lesson log — every concept learned so far, in order, distilled to the *why* behind it. **Start here.** |
 | **[AI_Lessons_Full_Transcript.md](./AI_Lessons_Full_Transcript.md)** | The full, unabridged lesson conversations (the long-form version of the log). |
-| **[Ai_research_concepts.md](./Ai_research_concepts.md)** | **What's next** — the core concepts left to learn to understand modern AI end-to-end. |
-| **[AI_RESEARCH_PREP.md](./AI_RESEARCH_PREP.md)** | **The hands-on build** — 4-phase tracker: math refresh → ML core → build a GPT from scratch → reproduce a paper. |
+| **[Ai_research_concepts.md](./Ai_research_concepts.md)** | The concept index — the 15 core gaps left to close, defined (what/why). |
+| **[PHASE_2_CONCEPTS.md](./PHASE_2_CONCEPTS.md)** | **Phase 2, active now** — the execution tracker for those 15 gaps: 16 weekends, one artifact + gate each. Visual version: [phase-2.html](./phase-2.html). |
+| **[AI_RESEARCH_PREP.md](./AI_RESEARCH_PREP.md)** | **Phase 3, after that** — the hands-on build: math refresh → ML core → build a GPT from scratch → reproduce a paper. |
+| **[concepts/](./concepts/)** & **[experiments/](./experiments/)** | Phase 2 output — one writeup and one runnable artifact per closed concept. |
 
 **The method, every lesson:** what did the previous step leave broken → what's the
 idea that fixes it → why does it matter. Understand, then advance.
@@ -52,10 +54,13 @@ idea that fixes it → why does it matter. Understand, then advance.
 neuron → backprop → deep learning → embeddings → sequences → attention/Transformer
 → scale (LLM) → tools+loop+memory (**agent**). Each leap fixed the prior wall.
 
-**Where I am:** concept foundation done. Next = the gaps the history skipped
-(tokenization, sampling, evals, modern alignment, MoE, multimodal, diffusion) plus
-the hands-on build. Concept plan in **[Ai_research_concepts.md](./Ai_research_concepts.md)**;
-build plan in **[AI_RESEARCH_PREP.md](./AI_RESEARCH_PREP.md)**.
+**Where I am:** concept foundation done → **Phase 2 in progress** (started
+2026-09-04): closing the 15 gaps the history skipped, one weekend at a time,
+each with a runnable artifact. **0 / 15 concepts · 0 / 16 weekends** — live
+tracker in **[PHASE_2_CONCEPTS.md](./PHASE_2_CONCEPTS.md)**, visual plan in
+**[phase-2.html](./phase-2.html)**. Realistic math: concepts land ~Dec 2026;
+the GPT build (**[AI_RESEARCH_PREP.md](./AI_RESEARCH_PREP.md)**) follows at
+weekend pace into mid-2027, with applications going out during the build.
 
 ---
 
